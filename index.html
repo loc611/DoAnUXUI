@@ -1,0 +1,3525 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ISTORE | Tisore — Fine Gastronomy</title>
+  <meta name="description"
+    content="Maison Tisore — Nhà hàng fine dining Michelin Selected, nơi nghệ thuật ẩm thực đương đại gặp gỡ tinh hoa nông sản bản địa Việt Nam." />
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500;1,600&family=Inter:wght@300;400;500;600&display=swap"
+    rel="stylesheet" />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            gold: '#D4AF37',
+            goldLight: '#E5C158',
+            dark: '#0A0A0A',
+            darkgreen: '#121A15',
+            card: '#1A1A1A',
+            cream: '#F5F0E8',
+            muted: '#A8A8A0',
+            divider: '#2A2A2A',
+          },
+          fontFamily: {
+            serif: ['"Cormorant Garamond"', 'Georgia', 'serif'],
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+          },
+          letterSpacing: {
+            wider2: '0.15em',
+            widest2: '0.2em',
+            widest3: '0.3em',
+          },
+        }
+      }
+    }
+  </script>
+
+  <style>
+    :root {
+      --gold: #D4AF37;
+      --gold-light: #E5C158;
+      --dark: #0A0A0A;
+      --dark-green: #121A15;
+      --card: #1A1A1A;
+      --border: #2A2A2A;
+      --text: #F5F0E8;
+      --muted: #A8A8A0;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: #0A0A0A;
+      color: #F5F0E8;
+      font-family: 'Inter', sans-serif;
+      min-width: 1280px;
+    }
+
+    /* Cart badge pulse */
+    @keyframes badgePop {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.35); }
+      100% { transform: scale(1); }
+    }
+    .badge-pop { animation: badgePop 0.3s ease; }
+
+    /* Cart drawer */
+    .cart-drawer {
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Modals & Backdrop */
+    .modal-backdrop {
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+    .modal-backdrop.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .modal-dialog {
+      transform: scale(0.96);
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .modal-backdrop.open .modal-dialog {
+      transform: scale(1);
+    }
+
+    /* Payment card options */
+    .payment-card {
+      border: 1px solid #2A2A2A;
+      padding: 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      background: #141414;
+      transition: all 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      text-align: center;
+      position: relative;
+    }
+    .payment-card:hover {
+      border-color: rgba(212, 175, 55, 0.5);
+    }
+    .payment-card.selected {
+      border-color: #D4AF37;
+      background: rgba(212, 175, 55, 0.05);
+    }
+    .payment-radio-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      border: 1px solid #555;
+      display: inline-block;
+      position: relative;
+      transition: all 0.2s;
+    }
+    .payment-card.selected .payment-radio-dot {
+      border-color: #D4AF37;
+      background: #D4AF37;
+      box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2);
+    }
+
+    /* Chips (Time & Area) */
+    .tisore-chip {
+      background: #141414;
+      border: 1px solid #2A2A2A;
+      color: #A8A8A0;
+      padding: 8px 14px;
+      font-size: 12px;
+      font-family: 'Inter', sans-serif;
+      border-radius: 2px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      user-select: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .tisore-chip:hover {
+      border-color: rgba(212, 175, 55, 0.6);
+      color: #F5F0E8;
+    }
+    .tisore-chip.active {
+      border-color: #D4AF37;
+      color: #D4AF37;
+      background: rgba(212, 175, 55, 0.08);
+      font-weight: 500;
+    }
+    .tisore-chip.disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+      border-color: #222;
+      text-decoration: line-through;
+    }
+
+    /* Stepper */
+    .tisore-stepper {
+      display: inline-flex;
+      align-items: center;
+      border: 1px solid #2A2A2A;
+      border-radius: 2px;
+      overflow: hidden;
+      background: #141414;
+    }
+    .stepper-btn {
+      width: 40px;
+      height: 42px;
+      background: transparent;
+      border: none;
+      color: #D4AF37;
+      font-size: 18px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s;
+    }
+    .stepper-btn:hover {
+      background: rgba(212, 175, 55, 0.1);
+    }
+    .stepper-val {
+      width: 50px;
+      text-align: center;
+      font-size: 15px;
+      font-weight: 500;
+      color: #F5F0E8;
+    }
+
+    /* Password Strength Meter */
+    .pwd-strength-bar {
+      height: 4px;
+      background: #2A2A2A;
+      border-radius: 2px;
+      overflow: hidden;
+      margin-top: 6px;
+    }
+    .pwd-strength-fill {
+      height: 100%;
+      width: 0%;
+      transition: width 0.3s, background-color 0.3s;
+    }
+
+    /* Spinner loader */
+    .tisore-spinner {
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(0, 0, 0, 0.25);
+      border-top-color: #0A0A0A;
+      border-radius: 50%;
+      display: inline-block;
+      animation: spin 0.7s linear infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Toasts */
+    .toast-container {
+      position: fixed;
+      bottom: 32px;
+      right: 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      z-index: 10000;
+      pointer-events: none;
+    }
+    .tisore-toast {
+      background: #141414;
+      border: 1px solid #D4AF37;
+      color: #F5F0E8;
+      padding: 14px 20px;
+      border-radius: 2px;
+      font-size: 13px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+      pointer-events: auto;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      animation: toastIn 0.3s ease;
+    }
+    @keyframes toastIn {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .tisore-toast.toast-out {
+      opacity: 0;
+      transform: translateY(-10px);
+      transition: all 0.3s ease;
+    }
+
+    /* User Menu Dropdown */
+    .user-dropdown-menu {
+      position: absolute;
+      top: 100%;
+      right: 0;
+      margin-top: 12px;
+      width: 260px;
+      background: #141414;
+      border: 1px solid #2A2A2A;
+      box-shadow: 0 16px 36px rgba(0,0,0,0.8);
+      border-radius: 2px;
+      display: none;
+      flex-direction: column;
+      z-index: 200;
+    }
+    .user-dropdown-menu.show {
+      display: flex;
+      animation: dropFade 0.2s ease;
+    }
+    @keyframes dropFade {
+      from { opacity: 0; transform: translateY(-8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .user-menu-item {
+      padding: 12px 18px;
+      color: #A8A8A0;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+    }
+    .user-menu-item:hover {
+      background: rgba(212, 175, 55, 0.08);
+      color: #D4AF37;
+    }
+    .user-menu-divider {
+      height: 1px;
+      background: #2A2A2A;
+      margin: 4px 0;
+    }
+
+    .label-gold {
+      font-family: 'Inter', sans-serif;
+      font-size: 11px;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: #D4AF37;
+      font-weight: 500;
+    }
+
+    .heading-serif {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 400;
+      color: #F5F0E8;
+      line-height: 1.15;
+    }
+
+    .btn-gold {
+      background: #D4AF37;
+      color: #0A0A0A;
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      border-radius: 2px;
+      padding: 12px 24px;
+      cursor: pointer;
+      transition: background 0.2s;
+      border: none;
+      display: inline-block;
+    }
+
+    .btn-gold:hover {
+      background: #E5C158;
+    }
+
+    .btn-outline-gold {
+      background: transparent;
+      color: #D4AF37;
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      border-radius: 2px;
+      padding: 12px 24px;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: 1px solid #D4AF37;
+      display: inline-block;
+    }
+
+    .btn-outline-gold:hover {
+      background: rgba(212, 175, 55, 0.08);
+    }
+
+    .nav-link {
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      font-weight: 400;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: #A8A8A0;
+      transition: color 0.2s;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .nav-link:hover {
+      color: #D4AF37;
+    }
+
+    input[type="text"],
+    input[type="tel"],
+    input[type="date"],
+    input[type="time"],
+    select,
+    textarea {
+      background: transparent;
+      border: 1px solid #2A2A2A;
+      color: #F5F0E8;
+      padding: 14px 16px;
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      font-weight: 300;
+      border-radius: 2px;
+      outline: none;
+      transition: border-color 0.2s;
+      width: 100%;
+    }
+
+    input[type="text"]:focus,
+    input[type="tel"]:focus,
+    input[type="date"]:focus,
+    input[type="time"]:focus,
+    select:focus,
+    textarea:focus {
+      border-color: #D4AF37;
+    }
+
+    input::placeholder,
+    textarea::placeholder {
+      color: #A8A8A0;
+    }
+
+    select option {
+      background: #1A1A1A;
+      color: #F5F0E8;
+    }
+
+    input[type="date"]::-webkit-calendar-picker-indicator,
+    input[type="time"]::-webkit-calendar-picker-indicator {
+      filter: invert(0.5);
+    }
+
+    .card-hover {
+      transition: border-color 0.2s;
+    }
+
+    .card-hover:hover {
+      border-color: #D4AF37 !important;
+    }
+
+    .dish-card:hover .dish-img {
+      transform: scale(1.04);
+    }
+
+    .dish-img {
+      transition: transform 0.4s;
+    }
+
+    .space-card:hover img {
+      transform: scale(1.04);
+    }
+
+    .space-card img {
+      transition: transform 0.4s;
+    }
+
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #0A0A0A;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #2A2A2A;
+      border-radius: 3px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+     1. HEADER
+═══════════════════════════════════════════════════════════════ -->
+  <header id="header"
+    style="position:sticky;top:0;z-index:100;background:#0A0A0A;border-bottom:1px solid #2A2A2A;height:72px;">
+    <div
+      style="max-width:1280px;margin:0 auto;padding:0 48px;height:100%;display:flex;align-items:center;justify-content:space-between;gap:32px;">
+
+      <!-- Logo -->
+      <div style="flex-shrink:0;">
+        <span
+          style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:500;letter-spacing:0.2em;color:#F5F0E8;text-transform:uppercase;">ISTORE</span>
+      </div>
+
+      <!-- Nav -->
+      <nav style="display:flex;align-items:center;gap:32px;">
+        <a class="nav-link" href="#" id="nav-restaurant">NHA HANG</a>
+        <a class="nav-link" href="#" id="nav-tisore">TISORE</a>
+        <a class="nav-link" href="#" id="nav-cafe">T-CAFE &amp; LOUNGE</a>
+        <a class="nav-link" href="#" id="nav-bistrot">T-BISTROT</a>
+        <a class="nav-link" href="#" id="nav-tea">TEA &amp; MORE</a>
+        <a class="nav-link" href="#" id="nav-hotel">T-HOTEL</a>
+      </nav>
+
+      <!-- Right side -->
+      <div style="flex-shrink:0;display:flex;align-items:center;gap:20px;">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#D4AF37" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path
+              d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.44 2 2 0 0 1 3.58 1.25h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.8a16 16 0 0 0 6.29 6.29l1.62-1.62a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" />
+          </svg>
+          <span
+            style="font-family:'Inter',sans-serif;font-size:13px;font-weight:500;color:#D4AF37;letter-spacing:0.05em;">1900
+            888 999</span>
+        </div>
+
+        <!-- User Profile Button / Dropdown (Feature 3) -->
+        <div style="position:relative;">
+          <button id="header-user-btn" title="Tài khoản Tisore"
+            style="width:38px;height:38px;border:1px solid #2A2A2A;background:transparent;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.2s;color:#F5F0E8;"
+            onmouseover="this.style.borderColor='#D4AF37'" onmouseout="if(!document.getElementById('user-menu-dropdown').classList.contains('show')) this.style.borderColor='#2A2A2A'">
+            <!-- Injected dynamically by TisoreAuth.updateUI -->
+            <svg id="header-user-icon-guest" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+            <div id="header-user-avatar" style="display:none;width:100%;height:100%;border-radius:50%;background:#1A1A1A;border:1px solid #D4AF37;color:#D4AF37;font-weight:600;font-size:13px;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;">
+              A
+            </div>
+          </button>
+
+          <!-- User Menu Dropdown -->
+          <div id="user-menu-dropdown" class="user-dropdown-menu">
+            <div style="padding:16px 18px;border-bottom:1px solid #2A2A2A;">
+              <p id="user-menu-name" style="font-size:14px;font-weight:500;color:#F5F0E8;font-family:'Cormorant Garamond',serif;letter-spacing:0.05em;">Khách hàng VIP</p>
+              <p id="user-menu-contact" style="font-size:11px;color:#A8A8A0;margin-top:2px;letter-spacing:0.02em;">demo@tisore.vn</p>
+            </div>
+            <a class="user-menu-item" id="btn-view-orders">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+              Đơn hàng đã đặt
+            </a>
+            <a class="user-menu-item" id="btn-view-reservations">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+              Lịch sử đặt bàn
+            </a>
+            <div class="user-menu-divider"></div>
+            <a class="user-menu-item" id="btn-logout" style="color:#EF4444;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+              Đăng xuất
+            </a>
+          </div>
+        </div>
+
+        <!-- Floating Cart Icon Button -->
+        <button id="header-cart-btn" title="Giỏ hàng"
+          style="position:relative;width:38px;height:38px;border:1px solid #2A2A2A;background:transparent;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:border-color 0.2s;"
+          onmouseover="this.style.borderColor='#D4AF37'" onmouseout="this.style.borderColor='#2A2A2A'">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#D4AF37" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="9" cy="21" r="1"></circle>
+            <circle cx="20" cy="21" r="1"></circle>
+            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+          </svg>
+          <span id="cart-badge"
+            style="display:none;position:absolute;top:-4px;right:-4px;background:#D4AF37;color:#0A0A0A;font-size:10px;font-weight:700;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Inter',sans-serif;">0</span>
+        </button>
+
+        <button class="btn-gold open-reservation-modal" id="header-booking-btn" style="font-size:11px;padding:10px 20px;">ĐẶT BÀN NGAY</button>
+      </div>
+    </div>
+  </header>
+
+
+  <!-- ═══════════════════════════════════════════════════════════════
+     2. HERO SECTION
+═══════════════════════════════════════════════════════════════ -->
+  <section id="hero" style="position:relative;width:100%;height:90vh;min-height:680px;overflow:hidden;">
+    <!-- Background image -->
+    <img src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1600&q=80" alt="Fine dining restaurant"
+      style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;" />
+    <!-- Dark overlay -->
+    <div
+      style="position:absolute;inset:0;background:linear-gradient(to right, rgba(10,10,10,0.88) 40%, rgba(10,10,10,0.55) 80%, rgba(10,10,10,0.35) 100%);">
+    </div>
+
+    <!-- Content -->
+    <div
+      style="position:relative;z-index:2;max-width:1280px;margin:0 auto;padding:0 48px;height:100%;display:flex;align-items:flex-end;padding-bottom:160px;">
+      <div style="max-width:640px;">
+        <p class="label-gold" style="margin-bottom:24px;">MAISON TISORE PRESENTS &#8212; FINE GASTRONOMY</p>
+        <h1 class="heading-serif" style="font-size:62px;margin-bottom:24px;color:#F5F0E8;">
+          Ngh&#7879; Thu&#7853;t &#7848;m Th&#7921;c<br />
+          <em style="font-style:italic;color:#D4AF37;">&#272;&#432;&#417;ng &#272;&#7841;i</em> Trong Kh&#244;ng<br />
+          Gian Ho&#224;ng Gia
+        </h1>
+        <p style="font-size:16px;line-height:1.75;color:#A8A8A0;max-width:540px;margin-bottom:36px;">H&#224;nh
+          tr&#236;nh v&#7883; gi&#225;c t&#7915; nh&#7919;ng s&#7843;n v&#7853;t b&#7843;n &#273;&#7883;a tinh
+          tuy&#7875;n, &#273;&#432;&#7907;c ki&#7871;n t&#7841;o b&#7903;i c&#225;c &#273;&#7847;u b&#7871;p t&#224;i
+          hoa trong kh&#244;ng gian c&#7911;a m&#7897;t cung &#273;i&#7879;n thu nh&#7887;.</p>
+        <div style="display:flex;align-items:center;gap:16px;">
+          <button class="btn-gold open-reservation-modal" id="hero-booking-btn">&#272;&#7840;T B&#192;N NGAY</button>
+          <button class="btn-outline-gold" id="hero-menu-btn">KH&#193;M PH&#193; TH&#7920;C &#272;&#416;N</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════════════════════════════
+     3. FEATURE BAR
+═══════════════════════════════════════════════════════════════ -->
+  <section id="feature-bar" style="background:#0A0A0A;border-top:1px solid rgba(212,175,55,0.3);">
+    <div style="max-width:1280px;margin:0 auto;padding:0 48px;">
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);border-left:1px solid rgba(212,175,55,0.15);">
+
+        <div style="padding:40px 48px;border-right:1px solid rgba(212,175,55,0.15);">
+          <span
+            style="font-family:'Cormorant Garamond',serif;font-size:12px;color:#D4AF37;letter-spacing:0.25em;display:block;margin-bottom:12px;">01</span>
+          <h3
+            style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:500;color:#F5F0E8;margin-bottom:8px;">
+            Michelin Selected 2024</h3>
+          <p style="font-size:13px;color:#A8A8A0;line-height:1.7;">Gi&#7843;i th&#432;&#7903;ng danh gi&#225; t&#7915;
+            c&#7849;m nang &#7849;m th&#7921;c danh ti&#7871;ng nh&#7845;t th&#7871; gi&#7899;i</p>
+        </div>
+
+        <div style="padding:40px 48px;border-right:1px solid rgba(212,175,55,0.15);">
+          <span
+            style="font-family:'Cormorant Garamond',serif;font-size:12px;color:#D4AF37;letter-spacing:0.25em;display:block;margin-bottom:12px;">02</span>
+          <h3
+            style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:500;color:#F5F0E8;margin-bottom:8px;">
+            Farm-to-table 100% Organic</h3>
+          <p style="font-size:13px;color:#A8A8A0;line-height:1.7;">Nguy&#234;n li&#7879;u t&#432;&#417;i t&#7915;
+            c&#225;c trang tr&#7841;i h&#7919;u c&#417; &#273;&#7841;t chu&#7849;n ch&#226;u &#194;u</p>
+        </div>
+
+        <div style="padding:40px 48px;">
+          <span
+            style="font-family:'Cormorant Garamond',serif;font-size:12px;color:#D4AF37;letter-spacing:0.25em;display:block;margin-bottom:12px;">03</span>
+          <h3
+            style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:500;color:#F5F0E8;margin-bottom:8px;">
+            H&#417;n 800+ Nh&#224; H&#224;ng Qu&#253;</h3>
+          <p style="font-size:13px;color:#A8A8A0;line-height:1.7;">&#272;&#432;&#7907;c tin t&#432;&#7903;ng ph&#7909;c
+            v&#7909; b&#7903;i t&#7847;ng l&#7899;p th&#432;&#7907;ng l&#432;u &#193; &#272;&#244;ng v&#224; Ch&#226;u
+            &#194;u</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════════════════════════════
+     4. STORY SECTION
+═══════════════════════════════════════════════════════════════ -->
+  <section id="story" style="background:#0A0A0A;padding:120px 0;">
+    <div
+      style="max-width:1280px;margin:0 auto;padding:0 48px;display:grid;grid-template-columns:55% 45%;gap:80px;align-items:center;">
+
+      <!-- LEFT: Image collage -->
+      <div style="position:relative;height:580px;">
+        <div style="position:absolute;top:0;left:0;width:78%;height:78%;overflow:hidden;border:1px solid #2A2A2A;">
+          <img src="https://images.unsplash.com/photo-1577219491135-ce391730fb2c?w=900&q=80" alt="Chef plating dish"
+            style="width:100%;height:100%;object-fit:cover;" />
+        </div>
+        <div
+          style="position:absolute;bottom:0;right:0;width:50%;height:46%;overflow:hidden;border:1px solid #2A2A2A;border-left:4px solid #D4AF37;">
+          <img src="https://images.unsplash.com/photo-1464226184884-fa280b87c399?w=700&q=80"
+            alt="Organic farm landscape" style="width:100%;height:100%;object-fit:cover;" />
+        </div>
+        <div style="position:absolute;bottom:46%;left:-24px;width:2px;height:40px;background:#D4AF37;opacity:0.5;">
+        </div>
+      </div>
+
+      <!-- RIGHT: Text content -->
+      <div>
+        <p class="label-gold" style="margin-bottom:20px;">T&#7920; H&#192;O NGUY&#202;N B&#7842;N</p>
+        <h2 class="heading-serif" style="font-size:40px;margin-bottom:24px;line-height:1.2;">T&#244;n Vinh N&#244;ng
+          S&#7843;n B&#7843;n &#272;&#7883;a Qua Ng&#7885;n L&#7917;a Ph&#225;p C&#7893; &#272;i&#7875;n</h2>
+        <p style="font-size:15px;color:#A8A8A0;line-height:1.8;margin-bottom:36px;">T&#7841;i Tisore, s&#7921; h&#224;o
+          ph&#243;ng &#273;&#7871;n t&#7915; nh&#7919;ng &#273;i&#7873;u m&#7897;c m&#7841;c. Ch&#250;ng t&#244;i
+          d&#224;nh tr&#7885;n t&#226;m huy&#7871;t &#273;&#7875; t&#244;n vinh nh&#7919;ng nguy&#234;n li&#7879;u
+          th&#432;&#7907;ng h&#7841;ng, n&#226;ng niu h&#432;&#417;ng v&#7883; nguy&#234;n b&#7843;n &#8212; n&#417;i
+          k&#7929; thu&#7853;t Ph&#225;p c&#7893; &#273;i&#7875;n g&#7863;p g&#7905; t&#226;m h&#7891;n &#7849;m
+          th&#7921;c Vi&#7879;t Nam.</p>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:36px;">
+          <div class="card-hover" style="border:1px solid #2A2A2A;padding:20px;border-radius:2px;">
+            <div style="width:32px;height:2px;background:#D4AF37;margin-bottom:12px;"></div>
+            <h4
+              style="font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:500;color:#F5F0E8;margin-bottom:8px;">
+              N&#244;ng S&#7843;n 100% Organic</h4>
+            <p style="font-size:12px;color:#A8A8A0;line-height:1.7;">&#272;&#432;&#7907;c ch&#7885;n l&#7885;c t&#7915;
+              h&#417;n 30 trang tr&#7841;i &#273;&#7889;i t&#225;c &#273;&#432;&#7907;c ch&#7913;ng nh&#7853;n</p>
+          </div>
+          <div class="card-hover" style="border:1px solid #2A2A2A;padding:20px;border-radius:2px;">
+            <div style="width:32px;height:2px;background:#D4AF37;margin-bottom:12px;"></div>
+            <h4
+              style="font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:500;color:#F5F0E8;margin-bottom:8px;">
+              K&#7929; Ngh&#7879; N&#7845;u Ch&#7853;m Sous-Vide</h4>
+            <p style="font-size:12px;color:#A8A8A0;line-height:1.7;">Ki&#7875;m so&#225;t nhi&#7879;t &#273;&#7897;
+              ho&#224;n h&#7843;o &#273;&#7875; gi&#7919; tr&#7885;n h&#432;&#417;ng v&#7883; t&#7921; nhi&#234;n</p>
+          </div>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:16px;padding-top:24px;border-top:1px solid #2A2A2A;">
+          <div style="width:48px;height:48px;border-radius:50%;overflow:hidden;border:1px solid #D4AF37;">
+            <img src="https://images.unsplash.com/photo-1583394293214-f5329d785b82?w=100&q=80" alt="Chef"
+              style="width:100%;height:100%;object-fit:cover;" />
+          </div>
+          <div>
+            <p style="font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:500;color:#F5F0E8;">Chef
+              Jean-Marc &amp; Th&#7843;o Vy</p>
+            <p style="font-size:11px;color:#A8A8A0;letter-spacing:0.1em;margin-top:2px;">&#272;&#7891;ng s&#225;ng
+              l&#7853;p &amp; B&#7871;p tr&#432;&#7903;ng &#273;i&#7873;u h&#224;nh</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════════════════════════════
+     5. MENU SECTION
+═══════════════════════════════════════════════════════════════ -->
+  <section id="menu" style="background:#121A15;padding:120px 0;">
+    <div style="max-width:1280px;margin:0 auto;padding:0 48px;">
+
+      <div style="text-align:center;margin-bottom:48px;">
+        <p class="label-gold" style="margin-bottom:16px;">TH&#7920;C &#272;&#416;N &#272;&#431;&#7906;C &#272;&#7874;
+          C&#7917;</p>
+        <h2 class="heading-serif" style="font-size:44px;line-height:1.2;">B&#7843;n Giao H&#432;&#417;ng V&#7883;
+          Gi&#225;c<br /><em style="font-style:italic;color:#D4AF37;">M&#249;a Thu &#272;&#244;ng</em></h2>
+      </div>
+
+      <div style="display:flex;justify-content:center;gap:12px;margin-bottom:48px;">
+        <button class="btn-gold" id="menu-toggle-1" style="font-size:11px;padding:11px 24px;">TH&#7920;C &#272;&#416;N
+          KH&#193;M PH&#193; C&#7892; &#272;I&#7874;N</button>
+        <button class="btn-outline-gold" id="menu-toggle-2" style="font-size:11px;padding:11px 24px;">TH&#7920;C
+          &#272;&#416;N DI S&#7842;N HO&#192;NG GIA</button>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:32px;">
+
+        <!-- Card 1 -->
+        <div class="card-hover" style="background:#1A1A1A;border:1px solid #2A2A2A;padding:40px;border-radius:2px;">
+          <div style="margin-bottom:24px;">
+            <p class="label-gold" style="font-size:10px;letter-spacing:0.25em;margin-bottom:12px;">2.250.000 VN&#272; /
+              KH&#193;CH</p>
+            <h3 class="heading-serif" style="font-size:28px;margin-bottom:10px;line-height:1.2;">Prestige Discovery Menu
+            </h3>
+            <p style="font-size:13px;color:#A8A8A0;line-height:1.7;">H&#224;nh tr&#236;nh 5 ch&#432;&#417;ng v&#7883;
+              gi&#225;c &#8212; t&#7915; &#273;&#7841;i d&#432;&#417;ng &#273;&#7871;n cao nguy&#234;n, tinh ch&#7871;
+              qua ng&#7885;n l&#7917;a Ph&#225;p.</p>
+          </div>
+          <div style="border-top:1px solid #2A2A2A;padding-top:28px;">
+
+            <div style="padding:14px 0;border-bottom:1px solid rgba(42,42,42,0.5);">
+              <div style="display:flex;align-items:center;gap:8px;">
+                <span style="font-family:'Cormorant Garamond',serif;font-size:15px;color:#F5F0E8;flex:1;">H&#224;u
+                  C&#7847;n Th&#417; Ch&#432;ng B&#417; Champagne</span>
+                <span style="border-bottom:1px dotted #3A3A3A;flex:1;height:0;margin-bottom:1px;"></span>
+                <span style="font-size:11px;color:#A8A8A0;flex-shrink:0;">Amuse-bouche</span>
+              </div>
+              <p style="font-size:12px;color:#A8A8A0;font-style:italic;margin-top:4px;">Fine de Claire Oyster, Champagne
+                Beurre Blanc</p>
+            </div>
+
+            <div style="padding:14px 0;border-bottom:1px solid rgba(42,42,42,0.5);">
+              <div style="display:flex;align-items:center;gap:8px;">
+                <span style="font-family:'Cormorant Garamond',serif;font-size:15px;color:#F5F0E8;flex:1;">S&#250;p
+                  T&#244;m H&#249;m Nga T&#7855;m S&#432;&#417;ng S&#7899;m</span>
+                <span style="border-bottom:1px dotted #3A3A3A;flex:1;height:0;margin-bottom:1px;"></span>
+                <span style="font-size:11px;color:#A8A8A0;flex-shrink:0;">Entr&#233;e</span>
+              </div>
+              <p style="font-size:12px;color:#A8A8A0;font-style:italic;margin-top:4px;">Lobster Bisque, Caviar,
+                Cr&#232;me Fra&#238;che</p>
+            </div>
+
+            <div style="padding:14px 0;border-bottom:1px solid rgba(42,42,42,0.5);">
+              <div style="display:flex;align-items:center;gap:8px;">
+                <span style="font-family:'Cormorant Garamond',serif;font-size:15px;color:#F5F0E8;flex:1;">B&#242; Wagyu
+                  &#193;p Ch&#7843;o Th&#259;ng B&#7857;ng S&#432;&#417;ng</span>
+                <span style="border-bottom:1px dotted #3A3A3A;flex:1;height:0;margin-bottom:1px;"></span>
+                <span style="font-size:11px;color:#A8A8A0;flex-shrink:0;">Plat Principal</span>
+              </div>
+              <p style="font-size:12px;color:#A8A8A0;font-style:italic;margin-top:4px;">Wagyu MB6+, Truffle Jus,
+                Haricots Verts</p>
+            </div>
+
+            <div style="padding:14px 0;border-bottom:1px solid rgba(42,42,42,0.5);">
+              <div style="display:flex;align-items:center;gap:8px;">
+                <span style="font-family:'Cormorant Garamond',serif;font-size:15px;color:#F5F0E8;flex:1;">Assiette de
+                  Fromages Affin&#233;s</span>
+                <span style="border-bottom:1px dotted #3A3A3A;flex:1;height:0;margin-bottom:1px;"></span>
+                <span style="font-size:11px;color:#A8A8A0;flex-shrink:0;">Fromage</span>
+              </div>
+              <p style="font-size:12px;color:#A8A8A0;font-style:italic;margin-top:4px;">Selection of 3 Artisanal French
+                Cheeses</p>
+            </div>
+
+            <div style="padding:14px 0;">
+              <div style="display:flex;align-items:center;gap:8px;">
+                <span style="font-family:'Cormorant Garamond',serif;font-size:15px;color:#F5F0E8;flex:1;">Sorbet
+                  Chocolate Valrhona &amp; Kem Vanilla</span>
+                <span style="border-bottom:1px dotted #3A3A3A;flex:1;height:0;margin-bottom:1px;"></span>
+                <span style="font-size:11px;color:#A8A8A0;flex-shrink:0;">Dessert</span>
+              </div>
+              <p style="font-size:12px;color:#A8A8A0;font-style:italic;margin-top:4px;">Valrhona 70%, Vanilla Madagascar
+              </p>
+            </div>
+          </div>
+
+          <div
+            style="margin-top:28px;padding-top:24px;border-top:1px solid #2A2A2A;display:flex;align-items:center;justify-content:space-between;">
+            <div>
+              <p style="font-size:11px;color:#A8A8A0;letter-spacing:0.1em;">WINE PAIRING</p>
+              <p style="font-family:'Cormorant Garamond',serif;font-size:15px;color:#D4AF37;margin-top:2px;">+ 1.200.000
+                VN&#272;</p>
+            </div>
+            <div style="display:flex;gap:8px;">
+              <button class="btn-outline-gold" id="menu-view-1" style="font-size:10px;padding:10px 14px;">XEM TR&#7884;N TH&#7920;C &#272;&#416;N</button>
+              <button class="btn-gold btn-add-to-cart" data-id="menu-prestige" data-name="Prestige Discovery Menu" data-price="2250000" data-image="https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=600&q=80" style="font-size:10px;padding:10px 14px;">+ THÊM VÀO GIỎ</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="card-hover"
+          style="background:#1A1A1A;border:1px solid #D4AF37;padding:40px;border-radius:2px;position:relative;">
+          <div style="position:absolute;top:24px;right:24px;background:#D4AF37;padding:4px 12px;border-radius:2px;">
+            <span
+              style="font-size:9px;font-weight:600;letter-spacing:0.15em;color:#0A0A0A;text-transform:uppercase;">FLAGSHIP</span>
+          </div>
+
+          <div style="margin-bottom:24px;">
+            <p class="label-gold" style="font-size:10px;letter-spacing:0.25em;margin-bottom:12px;">6.500.000 VN&#272; /
+              KH&#193;CH</p>
+            <h3 class="heading-serif" style="font-size:28px;margin-bottom:10px;line-height:1.2;">The Royal Heritage Menu
+            </h3>
+            <p style="font-size:13px;color:#A8A8A0;line-height:1.7;">Tr&#7843;i nghi&#7879;m ho&#224;ng gia 7
+              ch&#432;&#417;ng &#8212; b&#7897; s&#432;u t&#7853;p tinh hoa nh&#7845;t t&#7915; bi&#7875;n kh&#417;i
+              &#273;&#7871;n &#273;&#7881;nh n&#250;i.</p>
+          </div>
+          <div style="border-top:1px solid #2A2A2A;padding-top:28px;">
+
+            <div style="padding:14px 0;border-bottom:1px solid rgba(42,42,42,0.5);">
+              <div style="display:flex;align-items:center;gap:8px;">
+                <span style="font-family:'Cormorant Garamond',serif;font-size:15px;color:#F5F0E8;flex:1;">B&#225;nh
+                  M&#236; S&#242; &#272;i&#7879;p Ho&#224;ng Gia &amp; Tr&#7913;ng C&#225; T&#7847;m</span>
+                <span style="border-bottom:1px dotted #3A3A3A;flex:1;height:0;margin-bottom:1px;"></span>
+                <span style="font-size:11px;color:#A8A8A0;flex-shrink:0;">Amuse-bouche</span>
+              </div>
+              <p style="font-size:12px;color:#A8A8A0;font-style:italic;margin-top:4px;">Scallop Royale, Oscietra Caviar,
+                Gold Leaf</p>
+            </div>
+
+            <div style="padding:14px 0;border-bottom:1px solid rgba(42,42,42,0.5);">
+              <div style="display:flex;align-items:center;gap:8px;">
+                <span style="font-family:'Cormorant Garamond',serif;font-size:15px;color:#F5F0E8;flex:1;">S&#250;p
+                  T&#244;m H&#249;m Nga T&#7855;m N&#7855;ng V&#7899;i Tr&#7913;ng</span>
+                <span style="border-bottom:1px dotted #3A3A3A;flex:1;height:0;margin-bottom:1px;"></span>
+                <span style="font-size:11px;color:#A8A8A0;flex-shrink:0;">Entr&#233;e</span>
+              </div>
+              <p style="font-size:12px;color:#A8A8A0;font-style:italic;margin-top:4px;">Homard Breton, Imperial Caviar,
+                Saffron</p>
+            </div>
+
+            <div style="padding:14px 0;border-bottom:1px solid rgba(42,42,42,0.5);">
+              <div style="display:flex;align-items:center;gap:8px;">
+                <span style="font-family:'Cormorant Garamond',serif;font-size:15px;color:#F5F0E8;flex:1;">C&#225;
+                  H&#7891;i Na Uy &#193;p Ch&#7843;o &#272;&#225; Mu&#7889;i Himalaya</span>
+                <span style="border-bottom:1px dotted #3A3A3A;flex:1;height:0;margin-bottom:1px;"></span>
+                <span style="font-size:11px;color:#A8A8A0;flex-shrink:0;">Poisson</span>
+              </div>
+              <p style="font-size:12px;color:#A8A8A0;font-style:italic;margin-top:4px;">Norwegian Salmon, Beurre Blanc,
+                Micro Herbs</p>
+            </div>
+
+            <div style="padding:14px 0;border-bottom:1px solid rgba(42,42,42,0.5);">
+              <div style="display:flex;align-items:center;gap:8px;">
+                <span style="font-family:'Cormorant Garamond',serif;font-size:15px;color:#F5F0E8;flex:1;">B&#242; Wagyu
+                  A5 N&#432;&#7899;ng Than Hoa Anh &#272;&#224;o</span>
+                <span style="border-bottom:1px dotted #3A3A3A;flex:1;height:0;margin-bottom:1px;"></span>
+                <span style="font-size:11px;color:#A8A8A0;flex-shrink:0;">Plat Principal</span>
+              </div>
+              <p style="font-size:12px;color:#A8A8A0;font-style:italic;margin-top:4px;">Wagyu A5 Miyazaki, Binchotan,
+                P&#233;rigueux Sauce</p>
+            </div>
+
+            <div style="padding:14px 0;">
+              <div style="display:flex;align-items:center;gap:8px;">
+                <span style="font-family:'Cormorant Garamond',serif;font-size:15px;color:#F5F0E8;flex:1;">Sorbet
+                  Chocolate Valrhona Grand Cru &amp; Macadamia</span>
+                <span style="border-bottom:1px dotted #3A3A3A;flex:1;height:0;margin-bottom:1px;"></span>
+                <span style="font-size:11px;color:#A8A8A0;flex-shrink:0;">Dessert</span>
+              </div>
+              <p style="font-size:12px;color:#A8A8A0;font-style:italic;margin-top:4px;">Valrhona Guanaja 70%, Macadamia
+                Praline</p>
+            </div>
+          </div>
+
+          <div
+            style="margin-top:28px;padding-top:24px;border-top:1px solid #2A2A2A;display:flex;align-items:center;justify-content:space-between;">
+            <div>
+              <p style="font-size:11px;color:#A8A8A0;letter-spacing:0.1em;">GOURMET PAIRING</p>
+              <p style="font-family:'Cormorant Garamond',serif;font-size:15px;color:#D4AF37;margin-top:2px;">Sauvignon
+                Blanc 2021</p>
+            </div>
+            <div style="display:flex;gap:8px;">
+              <button class="btn-outline-gold" id="menu-view-2" style="font-size:10px;padding:10px 14px;">XEM TR&#7884;N TH&#7920;C &#272;&#416;N</button>
+              <button class="btn-gold btn-add-to-cart" data-id="menu-royal-heritage" data-name="The Royal Heritage Menu" data-price="6500000" data-image="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600&q=80" style="font-size:10px;padding:10px 14px;">+ THÊM VÀO GIỎ</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════════════════════════════
+     6. SIGNATURE DISHES
+═══════════════════════════════════════════════════════════════ -->
+  <section id="signature" style="background:#0A0A0A;padding:100px 0;">
+    <div style="max-width:1280px;margin:0 auto;padding:0 48px;">
+
+      <div style="text-align:center;margin-bottom:56px;">
+        <p class="label-gold" style="margin-bottom:16px;">KI&#7878;T T&#193;C &#272;&#7846;U B&#7870;P</p>
+        <h2 class="heading-serif" style="font-size:36px;">B&#7889;n Ki&#7879;t T&#225;c Kh&#244;ng Th&#7875; B&#7887;
+          L&#7905;</h2>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:24px;">
+
+        <div class="dish-card card-hover"
+          data-id="wagyu-a5" data-name="Bò Wagyu Áp Chảo Thăng Bằng" data-price="1850000" data-image="https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=600&q=80"
+          style="border:1px solid #2A2A2A;border-radius:2px;overflow:hidden;cursor:pointer;display:flex;flex-direction:column;justify-content:space-between;">
+          <div style="aspect-ratio:1;overflow:hidden;">
+            <img class="dish-img" src="https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=600&q=80"
+              alt="Bo Wagyu" style="width:100%;height:100%;object-fit:cover;" />
+          </div>
+          <div style="padding:20px;flex:1;display:flex;flex-direction:column;justify-content:space-between;">
+            <div>
+              <h4
+                style="font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:500;color:#F5F0E8;margin-bottom:6px;">
+                B&#242; Wagyu &#193;p Ch&#7843;o Th&#259;ng B&#7857;ng</h4>
+              <p style="font-size:12px;color:#A8A8A0;line-height:1.7;margin-bottom:16px;">Wagyu MB6+, S&#7889;t
+                P&#233;rigueux, Rau Xanh H&#7919;u C&#417; T&#226;y B&#7855;c</p>
+            </div>
+            <div>
+              <div style="display:flex;align-items:center;justify-content:space-between;">
+                <span
+                  style="font-family:'Cormorant Garamond',serif;font-size:16px;color:#D4AF37;font-weight:500;">1.850.000
+                  VN&#272;</span>
+                <button class="btn-add-to-cart"
+                  style="width:32px;height:32px;border:1px solid #2A2A2A;background:transparent;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:border-color 0.2s;"
+                  onmouseover="this.style.borderColor='#D4AF37'" onmouseout="this.style.borderColor='#2A2A2A'">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#D4AF37" stroke-width="2">
+                    <line x1="12" y1="5" x2="12" y2="19" />
+                    <line x1="5" y1="12" x2="19" y2="12" />
+                  </svg>
+                </button>
+              </div>
+              <button class="btn-outline-gold btn-add-to-cart" style="width:100%;margin-top:12px;padding:8px;font-size:11px;text-align:center;">+ Thêm vào giỏ</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="dish-card card-hover"
+          data-id="sup-tom-hum" data-name="Súp Tôm Hùm Nga Tắm Sương" data-price="890000" data-image="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600&q=80"
+          style="border:1px solid #2A2A2A;border-radius:2px;overflow:hidden;cursor:pointer;display:flex;flex-direction:column;justify-content:space-between;">
+          <div style="aspect-ratio:1;overflow:hidden;">
+            <img class="dish-img" src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600&q=80"
+              alt="Sup Tom Hum" style="width:100%;height:100%;object-fit:cover;" />
+          </div>
+          <div style="padding:20px;flex:1;display:flex;flex-direction:column;justify-content:space-between;">
+            <div>
+              <h4
+                style="font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:500;color:#F5F0E8;margin-bottom:6px;">
+                S&#250;p T&#244;m H&#249;m Nga T&#7855;m S&#432;&#417;ng</h4>
+              <p style="font-size:12px;color:#A8A8A0;line-height:1.7;margin-bottom:16px;">Homard Breton, Bisque, Caviar
+                Oscietra, Saffron</p>
+            </div>
+            <div>
+              <div style="display:flex;align-items:center;justify-content:space-between;">
+                <span style="font-family:'Cormorant Garamond',serif;font-size:16px;color:#D4AF37;font-weight:500;">890.000
+                  VN&#272;</span>
+                <button class="btn-add-to-cart"
+                  style="width:32px;height:32px;border:1px solid #2A2A2A;background:transparent;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:border-color 0.2s;"
+                  onmouseover="this.style.borderColor='#D4AF37'" onmouseout="this.style.borderColor='#2A2A2A'">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#D4AF37" stroke-width="2">
+                    <line x1="12" y1="5" x2="12" y2="19" />
+                    <line x1="5" y1="12" x2="19" y2="12" />
+                  </svg>
+                </button>
+              </div>
+              <button class="btn-outline-gold btn-add-to-cart" style="width:100%;margin-top:12px;padding:8px;font-size:11px;text-align:center;">+ Thêm vào giỏ</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="dish-card card-hover"
+          data-id="ca-hoi-nauy" data-name="Cá Hồi Na Uy Áp Chảo Đá Muối" data-price="820000" data-image="https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?w=600&q=80"
+          style="border:1px solid #2A2A2A;border-radius:2px;overflow:hidden;cursor:pointer;display:flex;flex-direction:column;justify-content:space-between;">
+          <div style="aspect-ratio:1;overflow:hidden;">
+            <img class="dish-img" src="https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?w=600&q=80"
+              alt="Ca Hoi Na Uy" style="width:100%;height:100%;object-fit:cover;" />
+          </div>
+          <div style="padding:20px;flex:1;display:flex;flex-direction:column;justify-content:space-between;">
+            <div>
+              <h4
+                style="font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:500;color:#F5F0E8;margin-bottom:6px;">
+                C&#225; H&#7891;i Na Uy &#193;p Ch&#7843;o &#272;&#225; Mu&#7889;i</h4>
+              <p style="font-size:12px;color:#A8A8A0;line-height:1.7;margin-bottom:16px;">Norwegian Salmon, Beurre Blanc,
+                Micro Herbs, Citrus</p>
+            </div>
+            <div>
+              <div style="display:flex;align-items:center;justify-content:space-between;">
+                <span style="font-family:'Cormorant Garamond',serif;font-size:16px;color:#D4AF37;font-weight:500;">820.000
+                  VN&#272;</span>
+                <button class="btn-add-to-cart"
+                  style="width:32px;height:32px;border:1px solid #2A2A2A;background:transparent;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:border-color 0.2s;"
+                  onmouseover="this.style.borderColor='#D4AF37'" onmouseout="this.style.borderColor='#2A2A2A'">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#D4AF37" stroke-width="2">
+                    <line x1="12" y1="5" x2="12" y2="19" />
+                    <line x1="5" y1="12" x2="19" y2="12" />
+                  </svg>
+                </button>
+              </div>
+              <button class="btn-outline-gold btn-add-to-cart" style="width:100%;margin-top:12px;padding:8px;font-size:11px;text-align:center;">+ Thêm vào giỏ</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="dish-card card-hover"
+          data-id="sorbet-valrhona" data-name="Sorbet Chocolate Valrhona & Macadamia" data-price="420000" data-image="https://images.unsplash.com/photo-1481391243133-f96216dcb5d2?w=600&q=80"
+          style="border:1px solid #2A2A2A;border-radius:2px;overflow:hidden;cursor:pointer;display:flex;flex-direction:column;justify-content:space-between;">
+          <div style="aspect-ratio:1;overflow:hidden;">
+            <img class="dish-img" src="https://images.unsplash.com/photo-1481391243133-f96216dcb5d2?w=600&q=80"
+              alt="Sorbet Chocolate" style="width:100%;height:100%;object-fit:cover;" />
+          </div>
+          <div style="padding:20px;flex:1;display:flex;flex-direction:column;justify-content:space-between;">
+            <div>
+              <h4
+                style="font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:500;color:#F5F0E8;margin-bottom:6px;">
+                Sorbet Chocolate Valrhona &amp; Macadamia</h4>
+              <p style="font-size:12px;color:#A8A8A0;line-height:1.7;margin-bottom:16px;">Valrhona Guanaja 70%, Macadamia
+                Praline, Gold Dust</p>
+            </div>
+            <div>
+              <div style="display:flex;align-items:center;justify-content:space-between;">
+                <span style="font-family:'Cormorant Garamond',serif;font-size:16px;color:#D4AF37;font-weight:500;">420.000
+                  VN&#272;</span>
+                <button class="btn-add-to-cart"
+                  style="width:32px;height:32px;border:1px solid #2A2A2A;background:transparent;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:border-color 0.2s;"
+                  onmouseover="this.style.borderColor='#D4AF37'" onmouseout="this.style.borderColor='#2A2A2A'">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#D4AF37" stroke-width="2">
+                    <line x1="12" y1="5" x2="12" y2="19" />
+                    <line x1="5" y1="12" x2="19" y2="12" />
+                  </svg>
+                </button>
+              </div>
+              <button class="btn-outline-gold btn-add-to-cart" style="width:100%;margin-top:12px;padding:8px;font-size:11px;text-align:center;">+ Thêm vào giỏ</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════════════════════════════
+     7. SPACES SECTION
+═══════════════════════════════════════════════════════════════ -->
+  <section id="spaces" style="background:#0A0A0A;padding:100px 0;border-top:1px solid #2A2A2A;">
+    <div style="max-width:1280px;margin:0 auto;padding:0 48px;">
+
+      <div style="text-align:center;margin-bottom:16px;">
+        <p class="label-gold" style="margin-bottom:16px;">KI&#7870;N TR&#218;C &amp; KH&#212;NG GIAN</p>
+        <h2 class="heading-serif" style="font-size:40px;line-height:1.2;margin-bottom:20px;">D&#7845;u &#7844;n Sang
+          Tr&#7885;ng Gi&#7919;a L&#242;ng<br /><em style="font-style:italic;color:#D4AF37;">&#272;&#244; Th&#7883;</em>
+        </h2>
+        <p style="font-size:15px;color:#A8A8A0;line-height:1.7;max-width:560px;margin:0 auto 56px;">M&#7895;i kh&#244;ng
+          gian t&#7841;i Tisore l&#224; m&#7897;t t&#225;c ph&#7849;m ki&#7871;n tr&#250;c &#8212; n&#417;i &#225;nh
+          s&#225;ng v&#224;ng v&#224; &#273;&#225; c&#7849;m th&#7841;ch h&#242;a quy&#7879;n t&#7841;o n&#234;n v&#361;
+          tr&#7909; ri&#234;ng c&#7911;a s&#7921; sang tr&#7885;ng.</p>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:28px;">
+
+        <div class="space-card card-hover"
+          style="border:1px solid #2A2A2A;border-radius:2px;overflow:hidden;cursor:pointer;">
+          <div style="overflow:hidden;">
+            <img src="https://images.unsplash.com/photo-1559339352-11d035aa65de?w=800&q=80" alt="Grand Dining Room"
+              style="width:100%;aspect-ratio:4/5;object-fit:cover;" />
+          </div>
+          <div style="padding:28px;">
+            <span
+              style="font-family:'Cormorant Garamond',serif;font-size:12px;color:#D4AF37;letter-spacing:0.25em;display:block;margin-bottom:10px;">01</span>
+            <h3
+              style="font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:500;color:#F5F0E8;margin-bottom:8px;">
+              S&#7843;nh Ch&#237;nh Grand Dining Room</h3>
+            <p style="font-size:13px;color:#A8A8A0;line-height:1.7;">Ki&#7879;t t&#225;c ki&#7871;n tr&#250;c Ph&#225;p
+              &#8212; &#273;&#232;n ch&#249;m pha l&#234; Bohemia, tr&#7847;n v&#242;m m&#7841; v&#224;ng 24K, s&#7913;c
+              ch&#7913;a 80 th&#7921;c kh&#225;ch.</p>
+          </div>
+        </div>
+
+        <div class="space-card card-hover"
+          style="border:1px solid #2A2A2A;border-radius:2px;overflow:hidden;cursor:pointer;">
+          <div style="overflow:hidden;">
+            <img src="https://images.unsplash.com/photo-1550966871-3ed3cdb5ed0c?w=800&q=80" alt="Phong Tiec VIP"
+              style="width:100%;aspect-ratio:4/5;object-fit:cover;" />
+          </div>
+          <div style="padding:28px;">
+            <span
+              style="font-family:'Cormorant Garamond',serif;font-size:12px;color:#D4AF37;letter-spacing:0.25em;display:block;margin-bottom:10px;">02</span>
+            <h3
+              style="font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:500;color:#F5F0E8;margin-bottom:8px;">
+              Ph&#242;ng Ti&#7879;c VIP &#272;&#7897;c B&#7843;n</h3>
+            <p style="font-size:13px;color:#A8A8A0;line-height:1.7;">Kh&#244;ng gian ri&#234;ng t&#432; tuy&#7879;t
+              &#273;&#7889;i &#8212; d&#224;nh cho nh&#7919;ng bu&#7893;i ti&#7879;c doanh nghi&#7879;p v&#224; l&#7877;
+              k&#7927; ni&#7879;m &#273;&#7863;c bi&#7879;t.</p>
+          </div>
+        </div>
+
+        <div class="space-card card-hover"
+          style="border:1px solid #2A2A2A;border-radius:2px;overflow:hidden;cursor:pointer;">
+          <div style="overflow:hidden;">
+            <img src="https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=800&q=80" alt="Cellar Bar"
+              style="width:100%;aspect-ratio:4/5;object-fit:cover;" />
+          </div>
+          <div style="padding:28px;">
+            <span
+              style="font-family:'Cormorant Garamond',serif;font-size:12px;color:#D4AF37;letter-spacing:0.25em;display:block;margin-bottom:10px;">03</span>
+            <h3
+              style="font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:500;color:#F5F0E8;margin-bottom:8px;">
+              Cellar Bar &amp; Hi&#234;n R&#432;&#417;u</h3>
+            <p style="font-size:13px;color:#A8A8A0;line-height:1.7;">H&#7847;m r&#432;&#7907;u 4.000+ chai t&#7915;
+              c&#225;c v&#249;ng Bordeaux, Burgundy, Tuscany &#8212; thi&#234;n &#273;&#432;&#7901;ng c&#7911;a
+              ng&#432;&#7901;i y&#234;u wine.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════════════════════════════
+     8. RESERVATION SECTION
+═══════════════════════════════════════════════════════════════ -->
+  <section id="reservation" style="background:#121A15;padding:120px 0;">
+    <div
+      style="max-width:1280px;margin:0 auto;padding:0 48px;display:grid;grid-template-columns:40% 60%;gap:80px;align-items:start;">
+
+      <div>
+        <p class="label-gold" style="margin-bottom:20px;">QUY CHU&#7844;N PH&#7908;C V&#7908;</p>
+        <h2 class="heading-serif" style="font-size:40px;line-height:1.2;margin-bottom:24px;">B&#7843;o L&#432;u
+          Ch&#7895; Ng&#7891;i<br /><em style="font-style:italic;color:#D4AF37;">Danh Gi&#225;</em></h2>
+        <p style="font-size:15px;color:#A8A8A0;line-height:1.8;margin-bottom:40px;">M&#7895;i b&#224;n t&#7841;i Tisore
+          l&#224; m&#7897;t tr&#7843;i nghi&#7879;m &#273;&#432;&#7907;c chu&#7849;n b&#7883; tr&#432;&#7899;c
+          nhi&#7873;u gi&#7901;. Ch&#250;ng t&#244;i tr&#226;n tr&#7885;ng t&#7915;ng l&#7847;n &#273;&#7863;t ch&#7895;
+          c&#7911;a Qu&#253; kh&#225;ch nh&#432; m&#7897;t s&#7921; ki&#7879;n &#273;&#7863;c bi&#7879;t.</p>
+
+        <div style="border-top:1px solid #2A2A2A;">
+          <div style="display:flex;align-items:flex-start;gap:16px;padding:20px 0;border-bottom:1px solid #2A2A2A;">
+            <div
+              style="width:36px;height:36px;border:1px solid #2A2A2A;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#D4AF37" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10" />
+                <polyline points="12 6 12 12 16 14" />
+              </svg>
+            </div>
+            <div>
+              <h4
+                style="font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:500;color:#F5F0E8;margin-bottom:4px;">
+                Khung Gi&#7901; Ph&#7909;c V&#7909;</h4>
+              <p style="font-size:13px;color:#A8A8A0;">11:30 &#8211; 14:00 &amp; 18:00 &#8211; 22:30</p>
+            </div>
+          </div>
+
+          <div style="display:flex;align-items:flex-start;gap:16px;padding:20px 0;border-bottom:1px solid #2A2A2A;">
+            <div
+              style="width:36px;height:36px;border:1px solid #2A2A2A;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#D4AF37" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path
+                  d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+              </svg>
+            </div>
+            <div>
+              <h4
+                style="font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:500;color:#F5F0E8;margin-bottom:4px;">
+                Quy Chu&#7849;n Trang Ph&#7909;c (Dress Code)</h4>
+              <p style="font-size:13px;color:#A8A8A0;">Smart Elegant &#8212; Kh&#244;ng ti&#7871;p nh&#7853;n trang
+                ph&#7909;c th&#7875; thao</p>
+            </div>
+          </div>
+
+          <div style="display:flex;align-items:flex-start;gap:16px;padding:20px 0;">
+            <div
+              style="width:36px;height:36px;border:1px solid #2A2A2A;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#D4AF37" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                <circle cx="9" cy="7" r="4" />
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+              </svg>
+            </div>
+            <div>
+              <h4
+                style="font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:500;color:#F5F0E8;margin-bottom:4px;">
+                H&#7895; Tr&#7907; Ri&#234;ng Bi&#7879;t &amp; Ti&#7879;c Doanh Nghi&#7879;p</h4>
+              <p style="font-size:13px;color:#A8A8A0;">S&#7921; ki&#7879;n ri&#234;ng t&#432;, ti&#7879;c doanh
+                nghi&#7879;p &amp; c&#225;c d&#7883;p &#273;&#7863;c bi&#7879;t</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Form -->
+      <div style="background:#0A0A0A;border:1px solid #2A2A2A;padding:40px;border-radius:2px;">
+        <h3 class="heading-serif" style="font-size:24px;margin-bottom:28px;">Th&#244;ng Tin &#272;&#7863;t B&#224;n</h3>
+
+        <form id="reservation-form" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+          <div>
+            <label
+              style="font-size:11px;color:#A8A8A0;letter-spacing:0.1em;text-transform:uppercase;display:block;margin-bottom:8px;">H&#7885;
+              &amp; t&#234;n</label>
+            <input type="text" id="res-name" placeholder="Nguy&#7877;n V&#259;n A" />
+          </div>
+          <div>
+            <label
+              style="font-size:11px;color:#A8A8A0;letter-spacing:0.1em;text-transform:uppercase;display:block;margin-bottom:8px;">S&#7889;
+              &#273;i&#7879;n tho&#7841;i</label>
+            <input type="tel" id="res-phone" placeholder="0901 234 567" />
+          </div>
+          <div>
+            <label
+              style="font-size:11px;color:#A8A8A0;letter-spacing:0.1em;text-transform:uppercase;display:block;margin-bottom:8px;">Ng&#224;y</label>
+            <input type="date" id="res-date" />
+          </div>
+          <div>
+            <label
+              style="font-size:11px;color:#A8A8A0;letter-spacing:0.1em;text-transform:uppercase;display:block;margin-bottom:8px;">Gi&#7901;</label>
+            <input type="time" id="res-time" />
+          </div>
+          <div>
+            <label
+              style="font-size:11px;color:#A8A8A0;letter-spacing:0.1em;text-transform:uppercase;display:block;margin-bottom:8px;">S&#7889;
+              ng&#432;&#7901;i</label>
+            <select id="res-guests">
+              <option value="">Ch&#7885;n s&#7889; ng&#432;&#7901;i</option>
+              <option>1 kh&#225;ch</option>
+              <option>2 kh&#225;ch</option>
+              <option>3 kh&#225;ch</option>
+              <option>4 kh&#225;ch</option>
+              <option>5 kh&#225;ch</option>
+              <option>6 kh&#225;ch</option>
+              <option>8 kh&#225;ch</option>
+              <option>10+ kh&#225;ch</option>
+            </select>
+          </div>
+          <div>
+            <label
+              style="font-size:11px;color:#A8A8A0;letter-spacing:0.1em;text-transform:uppercase;display:block;margin-bottom:8px;">Khu
+              v&#7921;c</label>
+            <select id="res-area">
+              <option value="">Ch&#7885;n khu v&#7921;c</option>
+              <option>S&#7843;nh Ch&#237;nh Grand Dining</option>
+              <option>Ph&#242;ng VIP &#272;&#7897;c B&#7843;n</option>
+              <option>Cellar Bar &amp; Hi&#234;n R&#432;&#7907;u</option>
+              <option>Terrace Ngo&#224;i Tr&#7901;i</option>
+            </select>
+          </div>
+          <div style="grid-column:1/-1;">
+            <label
+              style="font-size:11px;color:#A8A8A0;letter-spacing:0.1em;text-transform:uppercase;display:block;margin-bottom:8px;">Ghi
+              ch&#250;</label>
+            <textarea id="res-note" rows="3"
+              placeholder="Y&#234;u c&#7847;u &#273;&#7863;c bi&#7879;t, d&#7883; &#7913;ng th&#7921;c ph&#7849;m, v.v..."></textarea>
+          </div>
+          <div style="grid-column:1/-1;">
+            <label
+              style="font-size:11px;color:#A8A8A0;letter-spacing:0.1em;text-transform:uppercase;display:block;margin-bottom:8px;">D&#7883;p
+              &#273;&#7863;c bi&#7879;t</label>
+            <select id="res-occasion">
+              <option value="">Kh&#244;ng c&#243; d&#7883;p &#273;&#7863;c bi&#7879;t</option>
+              <option>Sinh nh&#7853;t</option>
+              <option>K&#7927; ni&#7879;m</option>
+              <option>C&#7847;u h&#244;n</option>
+              <option>Ti&#7879;c doanh nghi&#7879;p</option>
+              <option>L&#7877; k&#7927; ni&#7879;m kh&#225;c</option>
+            </select>
+          </div>
+          <div style="grid-column:1/-1;margin-top:8px;">
+            <button type="submit" class="btn-gold" id="reservation-submit"
+              style="width:100%;padding:18px;font-size:13px;letter-spacing:0.2em;">X&#193;C NH&#7852;N &#272;&#7840;T
+              B&#192;N</button>
+            <p style="font-size:11px;color:#A8A8A0;text-align:center;margin-top:16px;line-height:1.6;">B&#7857;ng
+              vi&#7879;c &#273;&#7863;t b&#224;n, Qu&#253; kh&#225;ch &#273;&#7891;ng &#253; v&#7899;i ch&#237;nh
+              s&#225;ch b&#7843;o l&#432;u c&#7911;a Tisore.</p>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════════════════════════════
+     9. REVIEWS SECTION
+═══════════════════════════════════════════════════════════════ -->
+  <section id="reviews" style="background:#0A0A0A;padding:100px 0;">
+    <div style="max-width:1280px;margin:0 auto;padding:0 48px;">
+
+      <div style="text-align:center;margin-bottom:56px;">
+        <p class="label-gold" style="margin-bottom:16px;">TI&#7870;NG VANG TH&#431;&#7906;NG L&#431;U</p>
+        <h2 class="heading-serif" style="font-size:40px;">L&#7901;i Ng&#7907;i Khen T&#7915; Gi&#7899;i M&#7897;
+          &#272;i&#7879;u</h2>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:24px;">
+
+        <div class="card-hover" style="background:#1A1A1A;border:1px solid #2A2A2A;padding:36px;border-radius:2px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;">
+            <span
+              style="font-size:9px;letter-spacing:0.2em;text-transform:uppercase;color:#D4AF37;font-weight:600;">MICHELIN
+              GUIDE</span>
+            <span style="color:#D4AF37;font-size:13px;letter-spacing:2px;">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+          </div>
+          <div style="width:32px;height:1px;background:#D4AF37;margin-bottom:20px;opacity:0.5;"></div>
+          <p
+            style="font-family:'Cormorant Garamond',serif;font-size:16px;font-style:italic;color:#F5F0E8;line-height:1.8;margin-bottom:28px;">
+            &#8220;Tisore &#273;&#227; &#273;&#432;a ngh&#7879; thu&#7853;t &#7849;m th&#7921;c Vi&#7879;t Nam l&#234;n
+            m&#7897;t t&#7847;m cao m&#7899;i, n&#417;i truy&#7873;n th&#7889;ng v&#224; s&#225;ng t&#7841;o h&#242;a
+            quy&#7879;n trong t&#7915;ng m&#243;n &#259;n. M&#7897;t tr&#7843;i nghi&#7879;m kh&#244;ng th&#7875;
+            n&#224;o qu&#234;n.&#8221;</p>
+          <div style="border-top:1px solid #2A2A2A;padding-top:20px;">
+            <p style="font-size:13px;font-weight:500;color:#F5F0E8;">Jean-Pierre Lef&#232;vre</p>
+            <p style="font-size:11px;color:#A8A8A0;margin-top:3px;">Bi&#234;n t&#7853;p vi&#234;n c&#7845;p cao,
+              Michelin Guide Southeast Asia 2024</p>
+          </div>
+        </div>
+
+        <div class="card-hover" style="background:#1A1A1A;border:1px solid #2A2A2A;padding:36px;border-radius:2px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;">
+            <span
+              style="font-size:9px;letter-spacing:0.2em;text-transform:uppercase;color:#D4AF37;font-weight:600;">L&#8217;OFFICIEL
+              VIETNAM</span>
+            <span style="color:#D4AF37;font-size:13px;letter-spacing:2px;">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+          </div>
+          <div style="width:32px;height:1px;background:#D4AF37;margin-bottom:20px;opacity:0.5;"></div>
+          <p
+            style="font-family:'Cormorant Garamond',serif;font-size:16px;font-style:italic;color:#F5F0E8;line-height:1.8;margin-bottom:28px;">
+            &#8220;Kh&#244;ng gian c&#7911;a Tisore l&#224; m&#7897;t ki&#7879;t t&#225;c ki&#7871;n tr&#250;c &#8212;
+            m&#7895;i g&#243;c nh&#236;n &#273;&#7873;u l&#224; m&#7897;t b&#7913;c tranh. C&#249;ng v&#7899;i
+            th&#7921;c &#273;&#417;n &#273;&#7859;ng c&#7845;p, &#273;&#226;y l&#224; n&#417;i &#273;&#7883;nh
+            ngh&#297;a l&#7841;i luxury dining t&#7841;i H&#224; N&#7897;i.&#8221;</p>
+          <div style="border-top:1px solid #2A2A2A;padding-top:20px;">
+            <p style="font-size:13px;font-weight:500;color:#F5F0E8;">Isabelle Nguyen</p>
+            <p style="font-size:11px;color:#A8A8A0;margin-top:3px;">Ph&#243;ng vi&#234;n &#7849;m th&#7921;c,
+              L&#8217;Officiel Vietnam &#8212; S&#7889; th&#225;ng 10/2024</p>
+          </div>
+        </div>
+
+        <div class="card-hover" style="background:#1A1A1A;border:1px solid #2A2A2A;padding:36px;border-radius:2px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;">
+            <span
+              style="font-size:9px;letter-spacing:0.2em;text-transform:uppercase;color:#D4AF37;font-weight:600;">MICHELIN
+              GUEST INSPECTOR</span>
+            <span style="color:#D4AF37;font-size:13px;letter-spacing:2px;">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+          </div>
+          <div style="width:32px;height:1px;background:#D4AF37;margin-bottom:20px;opacity:0.5;"></div>
+          <p
+            style="font-family:'Cormorant Garamond',serif;font-size:16px;font-style:italic;color:#F5F0E8;line-height:1.8;margin-bottom:28px;">
+            &#8220;Wagyu A5 v&#224; Sorbet Valrhona Grand Cru l&#224; hai trong s&#7889; nh&#7919;ng m&#243;n &#259;n
+            xu&#7845;t s&#7855;c nh&#7845;t t&#244;i t&#7915;ng th&#432;&#7903;ng th&#7913;c &#7903; &#272;&#244;ng Nam
+            &#193;. Tisore x&#7913;ng &#273;&#225;ng &#273;&#432;&#7907;c ghi t&#234;n v&#224;o l&#7883;ch s&#7917;
+            &#7849;m th&#7921;c.&#8221;</p>
+          <div style="border-top:1px solid #2A2A2A;padding-top:20px;">
+            <p style="font-size:13px;font-weight:500;color:#F5F0E8;">Anonymous Inspector</p>
+            <p style="font-size:11px;color:#A8A8A0;margin-top:3px;">Thanh tra &#7849;m th&#7921;c &#7849;n danh,
+              Michelin Guide 2024</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════════════════════════════
+     10. BRAND LOGOS ROW
+═══════════════════════════════════════════════════════════════ -->
+  <section id="brands"
+    style="background:#0A0A0A;padding:60px 0;border-top:1px solid #2A2A2A;border-bottom:1px solid #2A2A2A;">
+    <div
+      style="max-width:1280px;margin:0 auto;padding:0 48px;display:flex;align-items:center;justify-content:space-between;gap:32px;">
+      <div style="text-align:center;opacity:0.55;transition:opacity 0.2s;cursor:default;"
+        onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='0.55'">
+        <p
+          style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:0.35em;text-transform:uppercase;color:#A8A8A0;line-height:1.5;">
+          MICHELIN<br />GUIDE</p>
+      </div>
+      <div style="width:1px;height:40px;background:#2A2A2A;"></div>
+      <div style="text-align:center;opacity:0.55;transition:opacity 0.2s;cursor:default;"
+        onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='0.55'">
+        <p
+          style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:0.35em;text-transform:uppercase;color:#A8A8A0;line-height:1.5;">
+          GAULT &amp;<br />MILLAU</p>
+      </div>
+      <div style="width:1px;height:40px;background:#2A2A2A;"></div>
+      <div style="text-align:center;opacity:0.55;transition:opacity 0.2s;cursor:default;"
+        onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='0.55'">
+        <p
+          style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:0.35em;text-transform:uppercase;color:#A8A8A0;line-height:1.5;">
+          FORBES TRAVEL<br />GUIDE</p>
+      </div>
+      <div style="width:1px;height:40px;background:#2A2A2A;"></div>
+      <div style="text-align:center;opacity:0.55;transition:opacity 0.2s;cursor:default;"
+        onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='0.55'">
+        <p
+          style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:0.35em;text-transform:uppercase;color:#A8A8A0;line-height:1.5;">
+          WINE SPECTATOR<br />2024</p>
+      </div>
+      <div style="width:1px;height:40px;background:#2A2A2A;"></div>
+      <div style="text-align:center;opacity:0.55;transition:opacity 0.2s;cursor:default;"
+        onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='0.55'">
+        <p
+          style="font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:0.35em;text-transform:uppercase;color:#A8A8A0;line-height:1.5;">
+          TATLER<br />DINING</p>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════════════════════════════
+     11. FOOTER
+═══════════════════════════════════════════════════════════════ -->
+  <footer id="footer" style="background:#0A0A0A;padding:80px 0 40px;border-top:1px solid #2A2A2A;">
+    <div style="max-width:1280px;margin:0 auto;padding:0 48px;">
+
+      <div style="display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr;gap:56px;margin-bottom:64px;">
+
+        <div>
+          <div style="margin-bottom:20px;">
+            <span
+              style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:500;letter-spacing:0.2em;color:#F5F0E8;text-transform:uppercase;">ISTORE</span>
+            <div style="width:32px;height:1px;background:#D4AF37;margin-top:10px;"></div>
+          </div>
+          <p style="font-size:13px;color:#A8A8A0;line-height:1.8;margin-bottom:24px;">T&#7853;p &#273;o&#224;n
+            Hospitality h&#224;ng &#273;&#7847;u Vi&#7879;t Nam &#8212; v&#7853;n h&#224;nh h&#7879; sinh th&#225;i
+            &#7849;m th&#7921;c v&#224; ngh&#7881; d&#432;&#7905;ng cao c&#7845;p t&#7841;i c&#225;c th&#224;nh
+            ph&#7889; l&#7899;n.</p>
+          <div>
+            <p style="font-size:12px;color:#A8A8A0;line-height:1.9;">CSKH: <span style="color:#D4AF37;">1900 8000</span>
+            </p>
+            <p style="font-size:12px;color:#A8A8A0;line-height:1.9;">Hotline: <span style="color:#D4AF37;">028 3822
+                1688</span></p>
+            <p style="font-size:12px;color:#A8A8A0;line-height:1.9;">Email: <span
+                style="color:#D4AF37;">vip@istoregroup.com</span></p>
+          </div>
+        </div>
+
+        <div>
+          <p class="label-gold" style="margin-bottom:20px;font-size:10px;">THE CONCEPTS</p>
+          <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:12px;">
+            <li><a href="#" style="font-size:13px;color:#A8A8A0;text-decoration:none;transition:color 0.2s;"
+                onmouseover="this.style.color='#D4AF37'" onmouseout="this.style.color='#A8A8A0'">Tisore Fine Dining</a>
+            </li>
+            <li><a href="#" style="font-size:13px;color:#A8A8A0;text-decoration:none;transition:color 0.2s;"
+                onmouseover="this.style.color='#D4AF37'" onmouseout="this.style.color='#A8A8A0'">T-Caf&#233; &amp;
+                Lounge</a></li>
+            <li><a href="#" style="font-size:13px;color:#A8A8A0;text-decoration:none;transition:color 0.2s;"
+                onmouseover="this.style.color='#D4AF37'" onmouseout="this.style.color='#A8A8A0'">T-Bistrot</a></li>
+            <li><a href="#" style="font-size:13px;color:#A8A8A0;text-decoration:none;transition:color 0.2s;"
+                onmouseover="this.style.color='#D4AF37'" onmouseout="this.style.color='#A8A8A0'">T-Hotel Wellness</a>
+            </li>
+            <li><a href="#" style="font-size:13px;color:#A8A8A0;text-decoration:none;transition:color 0.2s;"
+                onmouseover="this.style.color='#D4AF37'" onmouseout="this.style.color='#A8A8A0'">Tea &amp; More</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <p class="label-gold" style="margin-bottom:20px;font-size:10px;">LOCATIONS &amp; HOUSES</p>
+          <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:14px;">
+            <li>
+              <p style="font-size:13px;color:#F5F0E8;margin-bottom:3px;">Tisore Flagship &amp; Bistro</p>
+              <p style="font-size:11px;color:#A8A8A0;line-height:1.6;">18 Tr&#224;ng Ti&#7873;n, Ho&#224;n Ki&#7871;m,
+                H&#224; N&#7897;i</p>
+            </li>
+            <li>
+              <p style="font-size:13px;color:#F5F0E8;margin-bottom:3px;">T-Caf&#233; &amp; Lounge</p>
+              <p style="font-size:11px;color:#A8A8A0;line-height:1.6;">42 L&#253; Th&#225;i T&#7893;, Ho&#224;n
+                Ki&#7871;m, H&#224; N&#7897;i</p>
+            </li>
+            <li>
+              <p style="font-size:13px;color:#F5F0E8;margin-bottom:3px;">T-Hotel &amp; Retreat Sanctuary</p>
+              <p style="font-size:11px;color:#A8A8A0;line-height:1.6;">Sapa, L&#224;o Cai (Opening 2025)</p>
+            </li>
+          </ul>
+        </div>
+
+        <div>
+          <p class="label-gold" style="margin-bottom:20px;font-size:10px;">THE GAZETTE</p>
+          <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:12px;">
+            <li><a href="#" style="font-size:13px;color:#A8A8A0;text-decoration:none;transition:color 0.2s;"
+                onmouseover="this.style.color='#D4AF37'" onmouseout="this.style.color='#A8A8A0'">Careers</a></li>
+            <li><a href="#" style="font-size:13px;color:#A8A8A0;text-decoration:none;transition:color 0.2s;"
+                onmouseover="this.style.color='#D4AF37'" onmouseout="this.style.color='#A8A8A0'">Press &amp; Media</a>
+            </li>
+            <li><a href="#" style="font-size:13px;color:#A8A8A0;text-decoration:none;transition:color 0.2s;"
+                onmouseover="this.style.color='#D4AF37'" onmouseout="this.style.color='#A8A8A0'">Sustainability</a></li>
+            <li><a href="#" style="font-size:13px;color:#A8A8A0;text-decoration:none;transition:color 0.2s;"
+                onmouseover="this.style.color='#D4AF37'" onmouseout="this.style.color='#A8A8A0'">Gift Cards</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Bottom bar -->
+      <div
+        style="border-top:1px solid #2A2A2A;padding-top:28px;display:flex;align-items:center;justify-content:space-between;">
+        <p style="font-size:11px;color:#A8A8A0;letter-spacing:0.05em;">&#169; 2025 ISTORE Hospitality Group. All rights
+          reserved.</p>
+        <div style="display:flex;align-items:center;gap:24px;">
+          <a href="#"
+            style="font-size:11px;color:#A8A8A0;text-decoration:none;letter-spacing:0.05em;transition:color 0.2s;"
+            onmouseover="this.style.color='#D4AF37'" onmouseout="this.style.color='#A8A8A0'">PRIVACY POLICY</a>
+          <span style="color:#3A3A3A;">|</span>
+          <a href="#"
+            style="font-size:11px;color:#A8A8A0;text-decoration:none;letter-spacing:0.05em;transition:color 0.2s;"
+            onmouseover="this.style.color='#D4AF37'" onmouseout="this.style.color='#A8A8A0'">TERMS OF SERVICE</a>
+          <span style="color:#3A3A3A;">|</span>
+          <a href="#"
+            style="font-size:11px;color:#A8A8A0;text-decoration:none;letter-spacing:0.05em;transition:color 0.2s;"
+            onmouseover="this.style.color='#D4AF37'" onmouseout="this.style.color='#A8A8A0'">PRESS &amp; MEDIA</a>
+          <span style="color:#3A3A3A;">|</span>
+          <a href="#"
+            style="font-size:11px;color:#A8A8A0;text-decoration:none;letter-spacing:0.05em;transition:color 0.2s;"
+            onmouseover="this.style.color='#D4AF37'" onmouseout="this.style.color='#A8A8A0'">SITEMAP</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+     CART DRAWER (Slide-in from right, 420px)
+═══════════════════════════════════════════════════════════════ -->
+  <div id="cart-drawer-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:900;opacity:0;transition:opacity 0.3s ease;"></div>
+  
+  <aside id="cart-drawer" class="cart-drawer"
+    style="position:fixed;top:0;right:0;width:420px;max-width:100vw;height:100vh;background:#0A0A0A;border-left:1px solid #2A2A2A;z-index:910;transform:translateX(100%);display:flex;flex-direction:column;box-shadow:-10px 0 40px rgba(0,0,0,0.9);">
+    
+    <!-- Drawer Header -->
+    <div style="padding:24px 28px;border-bottom:1px solid #2A2A2A;display:flex;align-items:center;justify-content:space-between;">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#D4AF37" stroke-width="2">
+          <circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle>
+          <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+        </svg>
+        <h3 style="font-family:'Cormorant Garamond',serif;font-size:22px;color:#F5F0E8;font-weight:500;letter-spacing:0.05em;margin:0;">Giỏ Hàng Của Bạn</h3>
+      </div>
+      <button id="btn-close-drawer" style="width:32px;height:32px;background:transparent;border:none;color:#A8A8A0;font-size:24px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:color 0.2s;" onmouseover="this.style.color='#D4AF37'" onmouseout="this.style.color='#A8A8A0'">&times;</button>
+    </div>
+
+    <!-- Drawer Items List (Scrollable) -->
+    <div id="cart-drawer-items" style="flex:1;overflow-y:auto;padding:24px 28px;display:flex;flex-direction:column;gap:20px;">
+      <!-- Populated dynamically by Cart.renderDrawer -->
+    </div>
+
+    <!-- Drawer Footer (Sticky Bottom) -->
+    <div style="border-top:1px solid #2A2A2A;padding:24px 28px;background:#0E0E0E;">
+      <div style="display:flex;justify-content:space-between;margin-bottom:10px;font-size:13px;color:#A8A8A0;">
+        <span>Tạm tính</span>
+        <span id="cart-subtotal" style="color:#F5F0E8;">0 VNĐ</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:14px;font-size:13px;color:#A8A8A0;">
+        <span>Phí phục vụ (5%)</span>
+        <span id="cart-service-fee" style="color:#F5F0E8;">0 VNĐ</span>
+      </div>
+      <div style="height:1px;background:#2A2A2A;margin-bottom:14px;"></div>
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:20px;">
+        <span style="font-size:14px;letter-spacing:0.1em;text-transform:uppercase;color:#F5F0E8;">Tổng cộng</span>
+        <span id="cart-total" style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:600;color:#D4AF37;">0 VNĐ</span>
+      </div>
+      <button id="btn-proceed-checkout" class="btn-gold" style="width:100%;padding:16px;font-size:12px;letter-spacing:0.2em;text-align:center;">
+        TIẾN HÀNH ĐẶT HÀNG
+      </button>
+    </div>
+  </aside>
+
+
+  <!-- ═══════════════════════════════════════════════════════════════
+     CHECKOUT MODAL (Feature 1: 1.4 - 1.7)
+═══════════════════════════════════════════════════════════════ -->
+  <div id="checkout-modal-backdrop" class="modal-backdrop"
+    style="position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:950;display:flex;align-items:center;justify-content:center;padding:24px;">
+    
+    <div class="modal-dialog"
+      style="background:#121212;border:1px solid #2A2A2A;width:100%;max-width:680px;max-height:92vh;border-radius:4px;overflow-y:auto;position:relative;box-shadow:0 20px 60px rgba(0,0,0,0.95);">
+      
+      <!-- Close Button -->
+      <button id="btn-close-checkout"
+        style="position:absolute;top:20px;right:20px;background:transparent;border:none;color:#A8A8A0;font-size:24px;cursor:pointer;z-index:10;"
+        onmouseover="this.style.color='#D4AF37'" onmouseout="this.style.color='#A8A8A0'">&times;</button>
+
+      <!-- Form View -->
+      <div id="checkout-form-screen" style="padding:40px;">
+        <div style="margin-bottom:28px;">
+          <p class="label-gold" style="margin-bottom:8px;">GIAO HÀNG TẬN NƠI</p>
+          <h3 style="font-family:'Cormorant Garamond',serif;font-size:28px;color:#F5F0E8;font-weight:400;margin:0;">
+            Thông Tin Đặt Hàng &amp; Thanh Toán
+          </h3>
+          <p style="font-size:12px;color:#A8A8A0;margin-top:6px;">Trải nghiệm ẩm thực Michelin Selected thượng hạng tại không gian riêng của Quý khách.</p>
+        </div>
+
+        <form id="checkout-form" novalidate>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
+            <div>
+              <label style="display:block;font-size:11px;color:#A8A8A0;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px;">
+                Họ &amp; tên <span style="color:#D4AF37;">*</span>
+              </label>
+              <input type="text" id="co-name" placeholder="Nguyễn Văn A" />
+              <div id="co-name-err" style="display:none;color:#EF4444;font-size:11px;margin-top:4px;">Vui lòng nhập họ và tên.</div>
+            </div>
+
+            <div>
+              <label style="display:block;font-size:11px;color:#A8A8A0;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px;">
+                Số điện thoại <span style="color:#D4AF37;">*</span>
+              </label>
+              <input type="tel" id="co-phone" placeholder="0901 234 567" maxlength="12" />
+              <div id="co-phone-err" style="display:none;color:#EF4444;font-size:11px;margin-top:4px;">Số điện thoại không hợp lệ (10 số).</div>
+            </div>
+          </div>
+
+          <div style="margin-bottom:16px;">
+            <label style="display:block;font-size:11px;color:#A8A8A0;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px;">
+              Email nhận xác nhận
+            </label>
+            <input type="email" id="co-email" placeholder="example@domain.com" />
+            <div id="co-email-err" style="display:none;color:#EF4444;font-size:11px;margin-top:4px;">Email không đúng định dạng.</div>
+          </div>
+
+          <div style="margin-bottom:16px;">
+            <label style="display:block;font-size:11px;color:#A8A8A0;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px;">
+              Địa chỉ giao hàng <span style="color:#D4AF37;">*</span>
+            </label>
+            <input type="text" id="co-address" placeholder="Số nhà, tên đường, phường/xã, quận/huyện..." />
+            <div id="co-address-err" style="display:none;color:#EF4444;font-size:11px;margin-top:4px;">Vui lòng nhập địa chỉ nhận hàng.</div>
+          </div>
+
+          <div style="margin-bottom:20px;">
+            <label style="display:block;font-size:11px;color:#A8A8A0;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px;">
+              Thời gian nhận hàng mong muốn
+            </label>
+            <select id="co-delivery-time">
+              <option value="now">Giao sớm nhất có thể (khoảng 35 - 50 phút)</option>
+              <option value="11:30 - 12:30">Trưa nay: 11:30 - 12:30</option>
+              <option value="12:30 - 13:30">Trưa nay: 12:30 - 13:30</option>
+              <option value="18:00 - 19:00">Tối nay: 18:00 - 19:00</option>
+              <option value="19:00 - 20:00">Tối nay: 19:00 - 20:00</option>
+              <option value="20:00 - 21:00">Tối nay: 20:00 - 21:00</option>
+            </select>
+          </div>
+
+          <!-- Feature 1.6: Payment Cards -->
+          <div style="margin-bottom:24px;">
+            <label style="display:block;font-size:11px;color:#A8A8A0;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:10px;">
+              Phương thức thanh toán <span style="color:#D4AF37;">*</span>
+            </label>
+            <div style="display:grid;grid-template-columns:repeat(3, 1fr);gap:12px;">
+              <div class="payment-card selected" data-payment="cod" onclick="TisoreCheckout.selectPayment('cod')">
+                <span style="font-size:22px;">💵</span>
+                <span style="font-size:12px;font-weight:500;color:#F5F0E8;">COD</span>
+                <span style="font-size:10px;color:#A8A8A0;">Tiền mặt khi nhận</span>
+                <div class="payment-radio-dot"></div>
+              </div>
+
+              <div class="payment-card" data-payment="transfer" onclick="TisoreCheckout.selectPayment('transfer')">
+                <span style="font-size:22px;">🏦</span>
+                <span style="font-size:12px;font-weight:500;color:#F5F0E8;">Chuyển khoản</span>
+                <span style="font-size:10px;color:#A8A8A0;">QR Code 24/7</span>
+                <div class="payment-radio-dot"></div>
+              </div>
+
+              <div class="payment-card" data-payment="card" onclick="TisoreCheckout.selectPayment('card')">
+                <span style="font-size:22px;">💳</span>
+                <span style="font-size:12px;font-weight:500;color:#F5F0E8;">Thẻ tín dụng</span>
+                <span style="font-size:10px;color:#A8A8A0;">Visa / Master / JCB</span>
+                <div class="payment-radio-dot"></div>
+              </div>
+            </div>
+          </div>
+
+          <div style="margin-bottom:24px;">
+            <label style="display:block;font-size:11px;color:#A8A8A0;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px;">
+              Ghi chú cho bếp &amp; giao hàng
+            </label>
+            <textarea id="co-note" rows="2" placeholder="Yêu cầu đóng gói, dặn dò tài xế hoặc dị ứng nguyên liệu..."></textarea>
+          </div>
+
+          <!-- Order Summary in Modal -->
+          <div style="background:#161616;border:1px solid #2A2A2A;padding:18px 20px;border-radius:2px;margin-bottom:24px;">
+            <div style="display:flex;justify-content:space-between;font-size:13px;color:#A8A8A0;margin-bottom:8px;">
+              <span>Món đã chọn (<span id="co-summary-count">0</span> món)</span>
+              <span id="co-summary-subtotal" style="color:#F5F0E8;">0 VNĐ</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:13px;color:#A8A8A0;margin-bottom:10px;">
+              <span>Phí phục vụ &amp; đóng gói cao cấp (5%)</span>
+              <span id="co-summary-fee" style="color:#F5F0E8;">0 VNĐ</span>
+            </div>
+            <div style="height:1px;background:#2A2A2A;margin-bottom:10px;"></div>
+            <div style="display:flex;justify-content:space-between;align-items:baseline;">
+              <span style="font-size:13px;letter-spacing:0.1em;text-transform:uppercase;color:#F5F0E8;font-weight:500;">Tổng thanh toán</span>
+              <span id="co-summary-total" style="font-family:'Cormorant Garamond',serif;font-size:22px;color:#D4AF37;font-weight:600;">0 VNĐ</span>
+            </div>
+          </div>
+
+          <!-- Submit Button (Feature 1.7) -->
+          <button type="button" id="btn-submit-order" onclick="TisoreCheckout.submitOrder()" class="btn-gold"
+            style="width:100%;padding:16px;font-size:12px;letter-spacing:0.2em;display:flex;align-items:center;justify-content:center;gap:10px;">
+            <span>XÁC NHẬN ĐẶT HÀNG</span>
+          </button>
+        </form>
+      </div>
+
+      <!-- Success Screen (Feature 1.7) -->
+      <div id="checkout-success-screen" style="display:none;padding:50px 40px;text-align:center;">
+        <div style="width:64px;height:64px;border-radius:50%;background:rgba(34,197,94,0.12);border:1px solid #22c55e;color:#22c55e;font-size:32px;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;">
+          ✓
+        </div>
+        <p class="label-gold" style="margin-bottom:8px;">MAISON TISORE TRÂN TRỌNG CẢM ƠN</p>
+        <h3 style="font-family:'Cormorant Garamond',serif;font-size:32px;color:#F5F0E8;font-weight:400;margin-bottom:12px;">
+          Đặt Hàng Thành Công!
+        </h3>
+        <p style="font-size:14px;color:#D4AF37;font-weight:500;letter-spacing:0.05em;margin-bottom:24px;" id="order-success-id">
+          Mã đơn hàng: #TISORE-000000
+        </p>
+
+        <div style="background:#161616;border:1px solid #2A2A2A;padding:24px;border-radius:2px;max-width:460px;margin:0 auto 28px;text-align:left;font-size:13px;line-height:1.8;">
+          <div style="display:flex;justify-content:space-between;border-bottom:1px solid #222;padding-bottom:8px;margin-bottom:8px;">
+            <span style="color:#A8A8A0;">Người nhận:</span>
+            <span id="order-success-name" style="color:#F5F0E8;font-weight:500;">-</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;border-bottom:1px solid #222;padding-bottom:8px;margin-bottom:8px;">
+            <span style="color:#A8A8A0;">Số điện thoại:</span>
+            <span id="order-success-phone" style="color:#F5F0E8;">-</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;border-bottom:1px solid #222;padding-bottom:8px;margin-bottom:8px;">
+            <span style="color:#A8A8A0;">Địa chỉ giao:</span>
+            <span id="order-success-address" style="color:#F5F0E8;text-align:right;max-width:240px;">-</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;border-bottom:1px solid #222;padding-bottom:8px;margin-bottom:8px;">
+            <span style="color:#A8A8A0;">Phương thức:</span>
+            <span id="order-success-payment" style="color:#D4AF37;">-</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding-top:4px;">
+            <span style="color:#A8A8A0;">Tổng tiền:</span>
+            <span id="order-success-total" style="font-family:'Cormorant Garamond',serif;font-size:18px;color:#D4AF37;font-weight:600;">-</span>
+          </div>
+        </div>
+
+        <p style="font-size:12px;color:#A8A8A0;line-height:1.6;margin-bottom:28px;">
+          Chuyên viên ẩm thực Tisore sẽ gọi điện xác nhận đơn và điều phối bếp chuẩn bị ngay trong 10 phút.
+        </p>
+
+        <button onclick="TisoreCheckout.finish()" class="btn-gold" style="padding:14px 40px;font-size:12px;letter-spacing:0.2em;">
+          HOÀN TẤT &amp; ĐÓNG
+        </button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ═══════════════════════════════════════════════════════════════
+     RESERVATION MODAL (Feature 2: Full Booking Flow)
+═══════════════════════════════════════════════════════════════ -->
+  <div id="reservation-modal-backdrop" class="modal-backdrop"
+    style="position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:950;display:flex;align-items:center;justify-content:center;padding:24px;">
+    
+    <div class="modal-dialog"
+      style="background:#121212;border:1px solid #2A2A2A;width:100%;max-width:760px;max-height:92vh;border-radius:4px;overflow-y:auto;position:relative;box-shadow:0 20px 60px rgba(0,0,0,0.95);">
+      
+      <!-- Close Button -->
+      <button id="btn-close-reservation-modal"
+        style="position:absolute;top:20px;right:20px;background:transparent;border:none;color:#A8A8A0;font-size:24px;cursor:pointer;z-index:10;"
+        onmouseover="this.style.color='#D4AF37'" onmouseout="this.style.color='#A8A8A0'">&times;</button>
+
+      <!-- Form View -->
+      <div id="res-modal-form-screen" style="padding:40px;">
+        <div style="margin-bottom:28px;">
+          <p class="label-gold" style="margin-bottom:8px;">BẢO LƯU CHỖ NGỒI DANH GIÁ</p>
+          <h3 style="font-family:'Cormorant Garamond',serif;font-size:28px;color:#D4AF37;font-weight:500;margin:0;">
+            Đặt Bàn Tại Tisore
+          </h3>
+          <p style="font-size:13px;color:#A8A8A0;margin-top:6px;">
+            Vui lòng điền thông tin để chúng tôi chuẩn bị chỗ ngồi tốt nhất cho Quý khách.
+          </p>
+        </div>
+
+        <form id="modal-reservation-form" novalidate>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px;">
+            <div>
+              <label style="display:block;font-size:11px;color:#A8A8A0;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px;">
+                Họ &amp; tên <span style="color:#D4AF37;">*</span>
+              </label>
+              <input type="text" id="modal-res-name" placeholder="Nguyễn Văn A" />
+              <div id="modal-res-name-err" style="display:none;color:#EF4444;font-size:11px;margin-top:4px;">Vui lòng nhập họ và tên.</div>
+            </div>
+
+            <div>
+              <label style="display:block;font-size:11px;color:#A8A8A0;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px;">
+                Số điện thoại <span style="color:#D4AF37;">*</span>
+              </label>
+              <input type="tel" id="modal-res-phone" placeholder="0901 234 567" maxlength="12" />
+              <div id="modal-res-phone-err" style="display:none;color:#EF4444;font-size:11px;margin-top:4px;">Số điện thoại không hợp lệ (10 số).</div>
+            </div>
+          </div>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px;">
+            <div>
+              <label style="display:block;font-size:11px;color:#A8A8A0;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px;">
+                Email
+              </label>
+              <input type="email" id="modal-res-email" placeholder="example@domain.com" />
+              <div id="modal-res-email-err" style="display:none;color:#EF4444;font-size:11px;margin-top:4px;">Email không đúng định dạng.</div>
+            </div>
+
+            <div>
+              <label style="display:block;font-size:11px;color:#A8A8A0;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px;">
+                Ngày đặt bàn <span style="color:#D4AF37;">*</span>
+              </label>
+              <input type="date" id="modal-res-date" onchange="TisoreReservation.onDateChange()" />
+              <div id="modal-res-date-err" style="display:none;color:#EF4444;font-size:11px;margin-top:4px;">Vui lòng chọn ngày hợp lệ.</div>
+            </div>
+          </div>
+
+          <!-- Feature 2.2: Giờ đặt bàn (Time Chips) -->
+          <div style="margin-bottom:20px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+              <label style="font-size:11px;color:#A8A8A0;letter-spacing:0.1em;text-transform:uppercase;">
+                Giờ đặt bàn <span style="color:#D4AF37;">*</span>
+              </label>
+              <span id="res-time-warning" style="display:none;font-size:11px;color:#E5C158;">
+                ⚠️ Vui lòng đặt trước ít nhất 2 giờ
+              </span>
+            </div>
+            <div id="res-time-chips" style="display:flex;flex-wrap:wrap;gap:8px;">
+              <!-- 11:30, 12:00, 12:30, 18:00, 18:30, 19:00, 19:30, 20:00, 20:30, 21:00 -->
+              <div class="tisore-chip active" data-time="11:30" onclick="TisoreReservation.selectTime('11:30')">11:30</div>
+              <div class="tisore-chip" data-time="12:00" onclick="TisoreReservation.selectTime('12:00')">12:00</div>
+              <div class="tisore-chip" data-time="12:30" onclick="TisoreReservation.selectTime('12:30')">12:30</div>
+              <div class="tisore-chip" data-time="18:00" onclick="TisoreReservation.selectTime('18:00')">18:00</div>
+              <div class="tisore-chip" data-time="18:30" onclick="TisoreReservation.selectTime('18:30')">18:30</div>
+              <div class="tisore-chip" data-time="19:00" onclick="TisoreReservation.selectTime('19:00')">19:00</div>
+              <div class="tisore-chip" data-time="19:30" onclick="TisoreReservation.selectTime('19:30')">19:30</div>
+              <div class="tisore-chip" data-time="20:00" onclick="TisoreReservation.selectTime('20:00')">20:00</div>
+              <div class="tisore-chip" data-time="20:30" onclick="TisoreReservation.selectTime('20:30')">20:30</div>
+              <div class="tisore-chip" data-time="21:00" onclick="TisoreReservation.selectTime('21:00')">21:00</div>
+            </div>
+            <div id="modal-res-time-err" style="display:none;color:#EF4444;font-size:11px;margin-top:6px;">Vui lòng chọn khung giờ hợp lệ.</div>
+          </div>
+
+          <!-- Feature 2.2: Số người (Stepper 1-20) -->
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:start;margin-bottom:20px;">
+            <div>
+              <label style="display:block;font-size:11px;color:#A8A8A0;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:8px;">
+                Số lượng khách <span style="color:#D4AF37;">*</span>
+              </label>
+              <div class="tisore-stepper">
+                <button type="button" class="stepper-btn" onclick="TisoreReservation.changeGuests(-1)">−</button>
+                <div class="stepper-val" id="modal-res-guests-val">2</div>
+                <button type="button" class="stepper-btn" onclick="TisoreReservation.changeGuests(1)">+</button>
+              </div>
+              <span style="font-size:12px;color:#A8A8A0;margin-left:10px;">Khách</span>
+              <!-- Notice for > 8 guests -->
+              <div id="res-large-party-notice" style="display:none;margin-top:8px;padding:8px 12px;background:rgba(212,175,55,0.08);border:1px solid rgba(212,175,55,0.3);border-radius:2px;font-size:11px;color:#E5C158;line-height:1.5;">
+                📞 Đặt bàn trên 8 người vui lòng gọi hotline <strong>1900 888 999</strong> để được hỗ trợ sắp xếp không gian tốt nhất.
+              </div>
+            </div>
+
+            <div>
+              <label style="display:block;font-size:11px;color:#A8A8A0;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:8px;">
+                Dịp đặc biệt
+              </label>
+              <select id="modal-res-occasion">
+                <option value="Không có">Không có dịp đặc biệt</option>
+                <option value="Sinh nhật">Sinh nhật</option>
+                <option value="Kỷ niệm">Kỷ niệm ngày cưới / Hẹn hò</option>
+                <option value="Doanh nghiệp">Tiệc đối tác / Doanh nghiệp</option>
+                <option value="Cầu hôn">Cầu hôn lãng mạn</option>
+                <option value="Khác">Dịp đặc biệt khác</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Feature 2.2: Khu vực (Chips Radio) -->
+          <div style="margin-bottom:20px;">
+            <label style="display:block;font-size:11px;color:#A8A8A0;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:8px;">
+              Khu vực mong muốn <span style="color:#D4AF37;">*</span>
+            </label>
+            <div id="res-area-chips" style="display:flex;flex-wrap:wrap;gap:8px;">
+              <div class="tisore-chip active" data-area="Sảnh chính" onclick="TisoreReservation.selectArea('Sảnh chính')">Sảnh chính Grand Dining</div>
+              <div class="tisore-chip" data-area="Phòng VIP" onclick="TisoreReservation.selectArea('Phòng VIP')">Phòng VIP Độc Bản</div>
+              <div class="tisore-chip" data-area="Cellar Bar" onclick="TisoreReservation.selectArea('Cellar Bar')">Cellar Bar &amp; Hầm Rượu</div>
+              <div class="tisore-chip" data-area="Hiên rượu" onclick="TisoreReservation.selectArea('Hiên rượu')">Hiên rượu</div>
+              <div class="tisore-chip" data-area="Ngoài trời" onclick="TisoreReservation.selectArea('Ngoài trời')">Terrace Ngoài trời</div>
+            </div>
+          </div>
+
+          <!-- Yêu cầu đặc biệt (Max 200 chars) -->
+          <div style="margin-bottom:28px;">
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+              <label style="font-size:11px;color:#A8A8A0;letter-spacing:0.1em;text-transform:uppercase;">
+                Yêu cầu đặc biệt
+              </label>
+              <span id="res-note-count" style="font-size:11px;color:#666;">0 / 200</span>
+            </div>
+            <textarea id="modal-res-note" rows="2" maxlength="200"
+              placeholder="Dị ứng thực phẩm, yêu cầu vị trí bàn cụ thể, trang trí hoa..."
+              oninput="document.getElementById('res-note-count').textContent = this.value.length + ' / 200'"></textarea>
+          </div>
+
+          <!-- Submit Button -->
+          <button type="button" id="btn-submit-reservation" onclick="TisoreReservation.submitBooking()" class="btn-gold"
+            style="width:100%;padding:16px;font-size:12px;letter-spacing:0.2em;display:flex;align-items:center;justify-content:center;gap:10px;">
+            <span>XÁC NHẬN ĐẶT BÀN NGAY</span>
+          </button>
+        </form>
+      </div>
+
+      <!-- Submit Success Screen (Feature 2.4) -->
+      <div id="res-modal-success-screen" style="display:none;padding:50px 40px;text-align:center;">
+        <div style="width:64px;height:64px;border-radius:50%;background:rgba(34,197,94,0.12);border:1px solid #22c55e;color:#22c55e;font-size:32px;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;">
+          ✓
+        </div>
+        <p class="label-gold" style="margin-bottom:8px;">BẢO LƯU CHỖ NGỒI THÀNH CÔNG</p>
+        <h3 style="font-family:'Cormorant Garamond',serif;font-size:32px;color:#F5F0E8;font-weight:400;margin-bottom:12px;">
+          Đặt Bàn Thành Công!
+        </h3>
+        <p style="font-size:14px;color:#D4AF37;font-weight:500;letter-spacing:0.05em;margin-bottom:24px;" id="booking-success-code">
+          Mã đặt bàn: #TABLE-000000
+        </p>
+
+        <div style="background:#161616;border:1px solid #2A2A2A;padding:24px;border-radius:2px;max-width:480px;margin:0 auto 28px;text-align:left;font-size:13px;line-height:1.8;">
+          <div style="display:flex;justify-content:space-between;border-bottom:1px solid #222;padding-bottom:8px;margin-bottom:8px;">
+            <span style="color:#A8A8A0;">Khách hàng:</span>
+            <span id="res-success-name" style="color:#F5F0E8;font-weight:500;">-</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;border-bottom:1px solid #222;padding-bottom:8px;margin-bottom:8px;">
+            <span style="color:#A8A8A0;">Ngày &amp; Giờ:</span>
+            <span id="res-success-datetime" style="color:#D4AF37;font-weight:500;">-</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;border-bottom:1px solid #222;padding-bottom:8px;margin-bottom:8px;">
+            <span style="color:#A8A8A0;">Số lượng:</span>
+            <span id="res-success-guests" style="color:#F5F0E8;">-</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;border-bottom:1px solid #222;padding-bottom:8px;margin-bottom:8px;">
+            <span style="color:#A8A8A0;">Khu vực:</span>
+            <span id="res-success-area" style="color:#F5F0E8;">-</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding-top:4px;">
+            <span style="color:#A8A8A0;">Dịp:</span>
+            <span id="res-success-occasion" style="color:#F5F0E8;">-</span>
+          </div>
+        </div>
+
+        <p style="font-size:12px;color:#A8A8A0;line-height:1.6;margin-bottom:28px;">
+          Chúng tôi sẽ gọi xác nhận trong 15 phút. Hân hạnh được đón tiếp Quý khách tại Maison Tisore.
+        </p>
+
+        <div style="display:flex;justify-content:center;gap:14px;">
+          <button onclick="TisoreReservation.downloadIcs()" class="btn-outline-gold" style="padding:14px 24px;font-size:11px;letter-spacing:0.15em;display:flex;align-items:center;gap:8px;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+            THÊM VÀO LỊCH (.ICS)
+          </button>
+          <button onclick="TisoreReservation.closeModal()" class="btn-gold" style="padding:14px 32px;font-size:11px;letter-spacing:0.15em;">
+            ĐÓNG
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ═══════════════════════════════════════════════════════════════
+     AUTH MODAL (Feature 3: Login & Register Tabs)
+═══════════════════════════════════════════════════════════════ -->
+  <div id="auth-modal-backdrop" class="modal-backdrop"
+    style="position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:960;display:flex;align-items:center;justify-content:center;padding:24px;">
+    
+    <div class="modal-dialog"
+      style="background:#121212;border:1px solid #2A2A2A;width:100%;max-width:480px;border-radius:4px;overflow:hidden;position:relative;box-shadow:0 20px 60px rgba(0,0,0,0.95);">
+      
+      <!-- Close Button -->
+      <button id="btn-close-auth-modal"
+        style="position:absolute;top:20px;right:20px;background:transparent;border:none;color:#A8A8A0;font-size:24px;cursor:pointer;z-index:10;"
+        onmouseover="this.style.color='#D4AF37'" onmouseout="this.style.color='#A8A8A0'">&times;</button>
+
+      <!-- Tabs Header -->
+      <div style="display:flex;border-bottom:1px solid #2A2A2A;background:#0D0D0D;">
+        <button id="auth-tab-login" onclick="TisoreAuth.switchTab('login')"
+          style="flex:1;padding:20px;background:transparent;border:none;border-bottom:2px solid #D4AF37;color:#D4AF37;font-family:'Cormorant Garamond',serif;font-size:20px;cursor:pointer;font-weight:500;">
+          Đăng Nhập
+        </button>
+        <button id="auth-tab-register" onclick="TisoreAuth.switchTab('register')"
+          style="flex:1;padding:20px;background:transparent;border:none;border-bottom:2px solid transparent;color:#A8A8A0;font-family:'Cormorant Garamond',serif;font-size:20px;cursor:pointer;font-weight:500;">
+          Đăng Ký
+        </button>
+      </div>
+
+      <div style="padding:32px;">
+        <!-- LOGIN FORM -->
+        <div id="auth-login-pane">
+          <form id="login-form" novalidate onsubmit="event.preventDefault(); TisoreAuth.submitLogin();">
+            <div style="margin-bottom:16px;">
+              <label style="display:block;font-size:11px;color:#A8A8A0;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px;">
+                Email hoặc Số điện thoại <span style="color:#D4AF37;">*</span>
+              </label>
+              <input type="text" id="login-identifier" placeholder="demo@tisore.vn hoặc 0901 234 567" />
+              <div id="login-identifier-err" style="display:none;color:#EF4444;font-size:11px;margin-top:4px;">Vui lòng nhập Email hoặc SĐT.</div>
+            </div>
+
+            <div style="margin-bottom:14px;position:relative;">
+              <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+                <label style="font-size:11px;color:#A8A8A0;letter-spacing:0.1em;text-transform:uppercase;">
+                  Mật khẩu <span style="color:#D4AF37;">*</span>
+                </label>
+                <a href="javascript:void(0)" onclick="TisoreUI.showToast('Vui lòng liên hệ hotline 1900 888 999 để đặt lại mật khẩu')"
+                  style="font-size:11px;color:#D4AF37;text-decoration:none;">Quên mật khẩu?</a>
+              </div>
+              <div style="position:relative;">
+                <input type="password" id="login-password" placeholder="••••••••" style="padding-right:42px;" />
+                <button type="button" onclick="TisoreAuth.togglePassword('login-password', this)"
+                  style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:transparent;border:none;color:#A8A8A0;cursor:pointer;padding:4px;">
+                  👁️
+                </button>
+              </div>
+              <div id="login-password-err" style="display:none;color:#EF4444;font-size:11px;margin-top:4px;">Mật khẩu tối thiểu 6 ký tự.</div>
+            </div>
+
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:22px;">
+              <input type="checkbox" id="login-remember" checked style="width:16px;height:16px;accent-color:#D4AF37;cursor:pointer;" />
+              <label for="login-remember" style="font-size:12px;color:#A8A8A0;cursor:pointer;user-select:none;">Ghi nhớ đăng nhập trên thiết bị này</label>
+            </div>
+
+            <button type="submit" class="btn-gold" style="width:100%;padding:14px;font-size:12px;letter-spacing:0.2em;text-align:center;">
+              ĐĂNG NHẬP
+            </button>
+          </form>
+
+          <!-- Divider -->
+          <div style="display:flex;align-items:center;gap:16px;margin:24px 0;">
+            <div style="flex:1;height:1px;background:#2A2A2A;"></div>
+            <span style="font-size:11px;color:#666;text-transform:uppercase;letter-spacing:0.1em;">hoặc</span>
+            <div style="flex:1;height:1px;background:#2A2A2A;"></div>
+          </div>
+
+          <!-- Social Buttons (Visual Demo) -->
+          <div style="display:grid;grid-template-columns:repeat(3, 1fr);gap:10px;margin-bottom:20px;">
+            <button type="button" onclick="TisoreUI.showToast('Tính năng đăng nhập Google đang phát triển')" class="card-hover"
+              style="padding:10px;background:#161616;border:1px solid #2A2A2A;border-radius:2px;color:#F5F0E8;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;">
+              <span>🌐</span> Google
+            </button>
+            <button type="button" onclick="TisoreUI.showToast('Tính năng đăng nhập Facebook đang phát triển')" class="card-hover"
+              style="padding:10px;background:#161616;border:1px solid #2A2A2A;border-radius:2px;color:#F5F0E8;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;">
+              <span>🔵</span> Facebook
+            </button>
+            <button type="button" onclick="TisoreUI.showToast('Tính năng đăng nhập Apple đang phát triển')" class="card-hover"
+              style="padding:10px;background:#161616;border:1px solid #2A2A2A;border-radius:2px;color:#F5F0E8;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;">
+              <span>🍎</span> Apple
+            </button>
+          </div>
+
+          <p style="font-size:12px;color:#A8A8A0;text-align:center;margin:0;">
+            Chưa có tài khoản? <a href="javascript:void(0)" onclick="TisoreAuth.switchTab('register')" style="color:#D4AF37;text-decoration:none;font-weight:500;">Đăng ký ngay</a>
+          </p>
+        </div>
+
+        <!-- REGISTER FORM -->
+        <div id="auth-register-pane" style="display:none;">
+          <form id="register-form" novalidate onsubmit="event.preventDefault(); TisoreAuth.submitRegister();">
+            <div style="margin-bottom:14px;">
+              <label style="display:block;font-size:11px;color:#A8A8A0;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:4px;">
+                Họ &amp; tên <span style="color:#D4AF37;">*</span>
+              </label>
+              <input type="text" id="reg-name" placeholder="Nguyễn Văn A" />
+              <div id="reg-name-err" style="display:none;color:#EF4444;font-size:11px;margin-top:4px;">Họ tên tối thiểu 2 ký tự.</div>
+            </div>
+
+            <div style="margin-bottom:14px;">
+              <label style="display:block;font-size:11px;color:#A8A8A0;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:4px;">
+                Số điện thoại <span style="color:#D4AF37;">*</span>
+              </label>
+              <input type="tel" id="reg-phone" placeholder="0901 234 567" maxlength="12" />
+              <div id="reg-phone-err" style="display:none;color:#EF4444;font-size:11px;margin-top:4px;">Số điện thoại hợp lệ gồm 10 chữ số.</div>
+            </div>
+
+            <div style="margin-bottom:14px;">
+              <label style="display:block;font-size:11px;color:#A8A8A0;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:4px;">
+                Email <span style="color:#D4AF37;">*</span>
+              </label>
+              <input type="email" id="reg-email" placeholder="example@domain.com" />
+              <div id="reg-email-err" style="display:none;color:#EF4444;font-size:11px;margin-top:4px;">Email không đúng định dạng.</div>
+            </div>
+
+            <!-- Password with Strength Meter -->
+            <div style="margin-bottom:14px;">
+              <label style="display:block;font-size:11px;color:#A8A8A0;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:4px;">
+                Mật khẩu <span style="color:#D4AF37;">*</span>
+              </label>
+              <div style="position:relative;">
+                <input type="password" id="reg-password" placeholder="Tối thiểu 6 ký tự, gồm chữ &amp; số" style="padding-right:42px;"
+                  oninput="TisoreAuth.checkPasswordStrength(this.value)" />
+                <button type="button" onclick="TisoreAuth.togglePassword('reg-password', this)"
+                  style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:transparent;border:none;color:#A8A8A0;cursor:pointer;padding:4px;">
+                  👁️
+                </button>
+              </div>
+              <div class="pwd-strength-bar">
+                <div id="pwd-strength-indicator" class="pwd-strength-fill"></div>
+              </div>
+              <div style="display:flex;justify-content:space-between;margin-top:4px;">
+                <span id="pwd-strength-label" style="font-size:10px;color:#666;">Độ mạnh mật khẩu</span>
+                <span style="font-size:10px;color:#666;">Chữ &amp; số</span>
+              </div>
+              <div id="reg-password-err" style="display:none;color:#EF4444;font-size:11px;margin-top:2px;">Mật khẩu cần ít nhất 6 ký tự gồm chữ và số.</div>
+            </div>
+
+            <!-- Confirm Password -->
+            <div style="margin-bottom:16px;">
+              <label style="display:block;font-size:11px;color:#A8A8A0;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:4px;">
+                Xác nhận mật khẩu <span style="color:#D4AF37;">*</span>
+              </label>
+              <div style="position:relative;">
+                <input type="password" id="reg-password-confirm" placeholder="Nhập lại mật khẩu" style="padding-right:42px;" />
+                <button type="button" onclick="TisoreAuth.togglePassword('reg-password-confirm', this)"
+                  style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:transparent;border:none;color:#A8A8A0;cursor:pointer;padding:4px;">
+                  👁️
+                </button>
+              </div>
+              <div id="reg-confirm-err" style="display:none;color:#EF4444;font-size:11px;margin-top:4px;">Mật khẩu xác nhận không khớp.</div>
+            </div>
+
+            <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:20px;">
+              <input type="checkbox" id="reg-agree" style="width:16px;height:16px;margin-top:2px;accent-color:#D4AF37;cursor:pointer;" />
+              <label for="reg-agree" style="font-size:11px;color:#A8A8A0;line-height:1.5;cursor:pointer;">
+                Tôi đồng ý với <a href="#" style="color:#D4AF37;text-decoration:none;">Điều khoản dịch vụ</a> &amp; <a href="#" style="color:#D4AF37;text-decoration:none;">Chính sách bảo mật</a> của Tisore.
+              </label>
+            </div>
+            <div id="reg-agree-err" style="display:none;color:#EF4444;font-size:11px;margin-top:-14px;margin-bottom:14px;">Quý khách vui lòng đồng ý với điều khoản.</div>
+
+            <button type="submit" class="btn-gold" style="width:100%;padding:14px;font-size:12px;letter-spacing:0.2em;text-align:center;">
+              ĐĂNG KÝ TÀI KHOẢN
+            </button>
+          </form>
+
+          <p style="font-size:12px;color:#A8A8A0;text-align:center;margin-top:20px;">
+            Đã có tài khoản? <a href="javascript:void(0)" onclick="TisoreAuth.switchTab('login')" style="color:#D4AF37;text-decoration:none;font-weight:500;">Đăng nhập ngay</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ═══════════════════════════════════════════════════════════════
+     HISTORY MODAL (Orders & Reservations Viewer)
+═══════════════════════════════════════════════════════════════ -->
+  <div id="history-modal-backdrop" class="modal-backdrop"
+    style="position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:960;display:flex;align-items:center;justify-content:center;padding:24px;">
+    
+    <div class="modal-dialog"
+      style="background:#121212;border:1px solid #2A2A2A;width:100%;max-width:680px;max-height:88vh;border-radius:4px;overflow-y:auto;position:relative;box-shadow:0 20px 60px rgba(0,0,0,0.95);padding:36px;">
+      
+      <button id="btn-close-history-modal"
+        style="position:absolute;top:20px;right:20px;background:transparent;border:none;color:#A8A8A0;font-size:24px;cursor:pointer;z-index:10;"
+        onmouseover="this.style.color='#D4AF37'" onmouseout="this.style.color='#A8A8A0'">&times;</button>
+
+      <div style="margin-bottom:24px;">
+        <p class="label-gold" style="margin-bottom:6px;">LỊCH SỬ HOẠT ĐỘNG</p>
+        <h3 id="history-modal-title" style="font-family:'Cormorant Garamond',serif;font-size:26px;color:#F5F0E8;font-weight:400;margin:0;">
+          Đơn Hàng Của Bạn
+        </h3>
+      </div>
+
+      <div id="history-modal-content" style="display:flex;flex-direction:column;gap:14px;">
+        <!-- Populated dynamically -->
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ═══════════════════════════════════════════════════════════════
+     TOAST CONTAINER
+═══════════════════════════════════════════════════════════════ -->
+  <div id="toast-container" class="toast-container"></div>
+
+
+  <!-- ═══════════════════════════════════════════════════════════════
+     MAIN JAVASCRIPT SYSTEM
+═══════════════════════════════════════════════════════════════ -->
+  <script>
+  /* -------------------------------------------------------------
+     1. UTILITY FUNCTIONS & FORMATTERS
+  ------------------------------------------------------------- */
+  const TisoreUtil = {
+    formatCurrency(amount) {
+      return new Intl.NumberFormat('vi-VN').format(amount) + ' VNĐ';
+    },
+
+    // Format phone to '0901 234 567'
+    formatPhone(input) {
+      const digits = (input || '').replace(/\D/g, '').substring(0, 10);
+      if (digits.length <= 4) return digits;
+      if (digits.length <= 7) return digits.substring(0, 4) + ' ' + digits.substring(4);
+      return digits.substring(0, 4) + ' ' + digits.substring(4, 7) + ' ' + digits.substring(7);
+    },
+
+    getRawDigits(phone) {
+      return (phone || '').replace(/\D/g, '');
+    },
+
+    isValidEmail(email) {
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email || '');
+    },
+
+    isValidPhone(phone) {
+      const digits = this.getRawDigits(phone);
+      return /^0\d{9}$/.test(digits);
+    }
+  };
+
+
+  /* -------------------------------------------------------------
+     2. UI & TOAST SYSTEM
+  ------------------------------------------------------------- */
+  const TisoreUI = {
+    showToast(message, icon = '✨') {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      toast.className = 'tisore-toast';
+      toast.innerHTML = `<span>${icon}</span><span>${message}</span>`;
+      container.appendChild(toast);
+
+      setTimeout(() => {
+        toast.classList.add('toast-out');
+        setTimeout(() => toast.remove(), 300);
+      }, 3200);
+    },
+
+    lockScroll(lock) {
+      document.body.style.overflow = lock ? 'hidden' : '';
+    }
+  };
+
+
+  /* -------------------------------------------------------------
+     3. AUTHENTICATION & USER SYSTEM (Feature 3)
+  ------------------------------------------------------------- */
+  const TisoreAuth = {
+    hashPassword(pwd) {
+      try {
+        return btoa(pwd + '_tisore_salt');
+      } catch (e) {
+        return pwd + '_salt';
+      }
+    },
+
+    init() {
+      // Seed demo VIP user if empty
+      let users = this.getUsers();
+      if (users.length === 0) {
+        const demoUser = {
+          id: 'user_demo_01',
+          fullName: 'Trần Anh Quân',
+          phone: '0901234567',
+          email: 'demo@tisore.vn',
+          passwordHash: this.hashPassword('Tisore123'),
+          createdAt: new Date().toISOString()
+        };
+        users.push(demoUser);
+        localStorage.setItem('tisore_users', JSON.stringify(users));
+      }
+
+      this.bindEvents();
+      this.updateUI();
+    },
+
+    getUsers() {
+      try {
+        return JSON.parse(localStorage.getItem('tisore_users')) || [];
+      } catch (e) {
+        return [];
+      }
+    },
+
+    getSession() {
+      try {
+        return JSON.parse(localStorage.getItem('tisore_session')) || null;
+      } catch (e) {
+        return null;
+      }
+    },
+
+    getUserData() {
+      try {
+        return JSON.parse(localStorage.getItem('tisore_user')) || null;
+      } catch (e) {
+        return null;
+      }
+    },
+
+    bindEvents() {
+      const userBtn = document.getElementById('header-user-btn');
+      const dropdown = document.getElementById('user-menu-dropdown');
+      const authBackdrop = document.getElementById('auth-modal-backdrop');
+      const closeAuthBtn = document.getElementById('btn-close-auth-modal');
+
+      // Header user button click
+      userBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const session = this.getSession();
+        if (!session) {
+          this.openModal('login');
+        } else {
+          dropdown.classList.toggle('show');
+        }
+      });
+
+      // Close dropdown when clicking outside
+      document.addEventListener('click', (e) => {
+        if (!dropdown.contains(e.target) && e.target !== userBtn) {
+          dropdown.classList.remove('show');
+        }
+      });
+
+      // Close auth modal
+      closeAuthBtn.addEventListener('click', () => this.closeModal());
+      authBackdrop.addEventListener('click', (e) => {
+        if (e.target === authBackdrop) this.closeModal();
+      });
+
+      // Phone auto-format in Register
+      const regPhoneInput = document.getElementById('reg-phone');
+      if (regPhoneInput) {
+        regPhoneInput.addEventListener('input', (e) => {
+          e.target.value = TisoreUtil.formatPhone(e.target.value);
+        });
+      }
+
+      // Dropdown menu actions
+      document.getElementById('btn-logout').addEventListener('click', () => this.logout());
+      document.getElementById('btn-view-orders').addEventListener('click', () => {
+        dropdown.classList.remove('show');
+        TisoreHistory.showOrders();
+      });
+      document.getElementById('btn-view-reservations').addEventListener('click', () => {
+        dropdown.classList.remove('show');
+        TisoreHistory.showReservations();
+      });
+    },
+
+    openModal(tab = 'login') {
+      this.switchTab(tab);
+      const backdrop = document.getElementById('auth-modal-backdrop');
+      backdrop.classList.add('open');
+      TisoreUI.lockScroll(true);
+    },
+
+    closeModal() {
+      const backdrop = document.getElementById('auth-modal-backdrop');
+      backdrop.classList.remove('open');
+      TisoreUI.lockScroll(false);
+    },
+
+    switchTab(tab) {
+      const loginPane = document.getElementById('auth-login-pane');
+      const regPane = document.getElementById('auth-register-pane');
+      const loginTab = document.getElementById('auth-tab-login');
+      const regTab = document.getElementById('auth-tab-register');
+
+      if (tab === 'login') {
+        loginPane.style.display = 'block';
+        regPane.style.display = 'none';
+        loginTab.style.color = '#D4AF37';
+        loginTab.style.borderBottomColor = '#D4AF37';
+        regTab.style.color = '#A8A8A0';
+        regTab.style.borderBottomColor = 'transparent';
+      } else {
+        loginPane.style.display = 'none';
+        regPane.style.display = 'block';
+        regTab.style.color = '#D4AF37';
+        regTab.style.borderBottomColor = '#D4AF37';
+        loginTab.style.color = '#A8A8A0';
+        loginTab.style.borderBottomColor = 'transparent';
+      }
+    },
+
+    togglePassword(inputId, btn) {
+      const input = document.getElementById(inputId);
+      if (input.type === 'password') {
+        input.type = 'text';
+        btn.textContent = '🙈';
+      } else {
+        input.type = 'password';
+        btn.textContent = '👁️';
+      }
+    },
+
+    checkPasswordStrength(pwd) {
+      const indicator = document.getElementById('pwd-strength-indicator');
+      const label = document.getElementById('pwd-strength-label');
+      
+      let score = 0;
+      if (pwd.length >= 6) score++;
+      if (/[a-zA-Z]/.test(pwd) && /\d/.test(pwd)) score++;
+      if (pwd.length >= 10 && /[^a-zA-Z0-9]/.test(pwd)) score++;
+
+      if (pwd.length === 0) {
+        indicator.style.width = '0%';
+        label.textContent = 'Độ mạnh mật khẩu';
+        label.style.color = '#666';
+      } else if (score <= 1) {
+        indicator.style.width = '33%';
+        indicator.style.backgroundColor = '#EF4444';
+        label.textContent = 'Mật khẩu yếu';
+        label.style.color = '#EF4444';
+      } else if (score === 2) {
+        indicator.style.width = '66%';
+        indicator.style.backgroundColor = '#E5C158';
+        label.textContent = 'Mật khẩu trung bình';
+        label.style.color = '#E5C158';
+      } else {
+        indicator.style.width = '100%';
+        indicator.style.backgroundColor = '#22C55E';
+        label.textContent = 'Mật khẩu mạnh';
+        label.style.color = '#22C55E';
+      }
+    },
+
+    submitLogin() {
+      const identifierInput = document.getElementById('login-identifier');
+      const passwordInput = document.getElementById('login-password');
+      const rememberInput = document.getElementById('login-remember');
+      const errIdentifier = document.getElementById('login-identifier-err');
+      const errPassword = document.getElementById('login-password-err');
+
+      let val = identifierInput.value.trim();
+      let pwd = passwordInput.value;
+
+      errIdentifier.style.display = 'none';
+      errPassword.style.display = 'none';
+
+      if (!val) {
+        errIdentifier.textContent = 'Vui lòng nhập Email hoặc SĐT.';
+        errIdentifier.style.display = 'block';
+        identifierInput.focus();
+        return;
+      }
+
+      if (!pwd || pwd.length < 6) {
+        errPassword.textContent = 'Mật khẩu tối thiểu 6 ký tự.';
+        errPassword.style.display = 'block';
+        passwordInput.focus();
+        return;
+      }
+
+      const users = this.getUsers();
+      const rawVal = TisoreUtil.getRawDigits(val);
+      const isEmail = val.includes('@');
+
+      const user = users.find(u => {
+        const matchContact = isEmail ? (u.email.toLowerCase() === val.toLowerCase()) : (u.phone === rawVal || u.phone === val);
+        return matchContact && u.passwordHash === this.hashPassword(pwd);
+      });
+
+      if (!user) {
+        errPassword.textContent = 'Tài khoản hoặc mật khẩu không chính xác.';
+        errPassword.style.display = 'block';
+        return;
+      }
+
+      // Successful login
+      const session = {
+        userId: user.id,
+        fullName: user.fullName,
+        email: user.email,
+        phone: user.phone,
+        loginAt: new Date().toISOString(),
+        rememberMe: rememberInput.checked
+      };
+
+      localStorage.setItem('tisore_session', JSON.stringify(session));
+      localStorage.setItem('tisore_user', JSON.stringify({
+        fullName: user.fullName,
+        email: user.email,
+        phone: user.phone,
+        address: user.address || ''
+      }));
+
+      this.closeModal();
+      this.updateUI();
+      TisoreUI.showToast(`Chào mừng Quý khách ${user.fullName} trở lại!`, '🥂');
+    },
+
+    submitRegister() {
+      const name = document.getElementById('reg-name').value.trim();
+      const rawPhone = TisoreUtil.getRawDigits(document.getElementById('reg-phone').value);
+      const email = document.getElementById('reg-email').value.trim();
+      const pwd = document.getElementById('reg-password').value;
+      const confirmPwd = document.getElementById('reg-password-confirm').value;
+      const agreed = document.getElementById('reg-agree').checked;
+
+      let valid = true;
+      const errs = ['reg-name-err', 'reg-phone-err', 'reg-email-err', 'reg-password-err', 'reg-confirm-err', 'reg-agree-err'];
+      errs.forEach(id => document.getElementById(id).style.display = 'none');
+
+      if (name.length < 2) {
+        document.getElementById('reg-name-err').style.display = 'block';
+        valid = false;
+      }
+      if (!TisoreUtil.isValidPhone(rawPhone)) {
+        document.getElementById('reg-phone-err').style.display = 'block';
+        valid = false;
+      }
+      if (!TisoreUtil.isValidEmail(email)) {
+        document.getElementById('reg-email-err').style.display = 'block';
+        valid = false;
+      }
+      if (pwd.length < 6 || !(/[a-zA-Z]/.test(pwd) && /\d/.test(pwd))) {
+        document.getElementById('reg-password-err').style.display = 'block';
+        valid = false;
+      }
+      if (pwd !== confirmPwd) {
+        document.getElementById('reg-confirm-err').style.display = 'block';
+        valid = false;
+      }
+      if (!agreed) {
+        document.getElementById('reg-agree-err').style.display = 'block';
+        valid = false;
+      }
+
+      if (!valid) return;
+
+      const users = this.getUsers();
+      if (users.some(u => u.email.toLowerCase() === email.toLowerCase())) {
+        document.getElementById('reg-email-err').textContent = 'Email này đã được sử dụng.';
+        document.getElementById('reg-email-err').style.display = 'block';
+        return;
+      }
+      if (users.some(u => u.phone === rawPhone)) {
+        document.getElementById('reg-phone-err').textContent = 'Số điện thoại này đã được sử dụng.';
+        document.getElementById('reg-phone-err').style.display = 'block';
+        return;
+      }
+
+      const newUser = {
+        id: 'user_' + Date.now(),
+        fullName: name,
+        phone: rawPhone,
+        email: email,
+        passwordHash: this.hashPassword(pwd),
+        createdAt: new Date().toISOString()
+      };
+
+      users.push(newUser);
+      localStorage.setItem('tisore_users', JSON.stringify(users));
+
+      // Auto login after register
+      const session = {
+        userId: newUser.id,
+        fullName: newUser.fullName,
+        email: newUser.email,
+        phone: newUser.phone,
+        loginAt: new Date().toISOString(),
+        rememberMe: true
+      };
+
+      localStorage.setItem('tisore_session', JSON.stringify(session));
+      localStorage.setItem('tisore_user', JSON.stringify({
+        fullName: newUser.fullName,
+        email: newUser.email,
+        phone: newUser.phone,
+        address: ''
+      }));
+
+      this.closeModal();
+      this.updateUI();
+      TisoreUI.showToast(`Đăng ký thành công! Chào mừng Quý khách ${newUser.fullName}.`, '🎉');
+    },
+
+    logout() {
+      localStorage.removeItem('tisore_session');
+      localStorage.removeItem('tisore_user');
+      document.getElementById('user-menu-dropdown').classList.remove('show');
+      this.updateUI();
+      TisoreUI.showToast('Đã đăng xuất tài khoản thành công.', '👋');
+    },
+
+    updateUI() {
+      const session = this.getSession();
+      const guestIcon = document.getElementById('header-user-icon-guest');
+      const avatarDiv = document.getElementById('header-user-avatar');
+      const userBtn = document.getElementById('header-user-btn');
+      const menuName = document.getElementById('user-menu-name');
+      const menuContact = document.getElementById('user-menu-contact');
+
+      if (session) {
+        guestIcon.style.display = 'none';
+        avatarDiv.style.display = 'flex';
+        const initial = (session.fullName || 'T').trim().charAt(0).toUpperCase();
+        avatarDiv.textContent = initial;
+        userBtn.style.borderColor = '#D4AF37';
+
+        menuName.textContent = session.fullName;
+        menuContact.textContent = session.email || TisoreUtil.formatPhone(session.phone);
+      } else {
+        guestIcon.style.display = 'block';
+        avatarDiv.style.display = 'none';
+        userBtn.style.borderColor = '#2A2A2A';
+      }
+    }
+  };
+
+
+  /* -------------------------------------------------------------
+     4. CART MANAGEMENT & DRAWER SYSTEM
+  ------------------------------------------------------------- */
+  const TisoreCart = {
+    items: [],
+
+    init() {
+      this.load();
+      this.bindEvents();
+      this.updateBadge();
+      this.renderDrawer();
+    },
+
+    load() {
+      try {
+        this.items = JSON.parse(localStorage.getItem('tisore_cart')) || [];
+      } catch (e) {
+        this.items = [];
+      }
+    },
+
+    save() {
+      localStorage.setItem('tisore_cart', JSON.stringify(this.items));
+      this.updateBadge();
+      this.renderDrawer();
+    },
+
+    addItem(product) {
+      const existing = this.items.find(i => i.id === product.id);
+      if (existing) {
+        existing.quantity += 1;
+      } else {
+        this.items.push({
+          id: product.id,
+          name: product.name,
+          price: Number(product.price),
+          image: product.image,
+          quantity: 1
+        });
+      }
+      this.save();
+      TisoreUI.showToast(`Đã thêm "${product.name}" vào giỏ hàng`, '🛒');
+      this.openDrawer();
+    },
+
+    updateQuantity(id, delta) {
+      const item = this.items.find(i => i.id === id);
+      if (!item) return;
+      item.quantity += delta;
+      if (item.quantity <= 0) {
+        this.removeItem(id);
+      } else {
+        this.save();
+      }
+    },
+
+    removeItem(id) {
+      const item = this.items.find(i => i.id === id);
+      if (!item) return;
+      if (confirm(`Quý khách có chắc muốn bỏ món "${item.name}" khỏi giỏ hàng?`)) {
+        this.items = this.items.filter(i => i.id !== id);
+        this.save();
+        TisoreUI.showToast(`Đã xoá món khỏi giỏ hàng`, '🗑️');
+      }
+    },
+
+    clear() {
+      this.items = [];
+      this.save();
+    },
+
+    getCount() {
+      return this.items.reduce((sum, i) => sum + i.quantity, 0);
+    },
+
+    getSubtotal() {
+      return this.items.reduce((sum, i) => sum + (i.price * i.quantity), 0);
+    },
+
+    getServiceFee() {
+      return Math.round(this.getSubtotal() * 0.05);
+    },
+
+    getTotal() {
+      return this.getSubtotal() + this.getServiceFee();
+    },
+
+    updateBadge() {
+      const badge = document.getElementById('cart-badge');
+      const count = this.getCount();
+      if (count > 0) {
+        badge.textContent = count;
+        badge.style.display = 'flex';
+        badge.classList.remove('badge-pop');
+        void badge.offsetWidth;
+        badge.classList.add('badge-pop');
+      } else {
+        badge.style.display = 'none';
+      }
+    },
+
+    openDrawer() {
+      const drawer = document.getElementById('cart-drawer');
+      const overlay = document.getElementById('cart-drawer-overlay');
+      overlay.style.display = 'block';
+      setTimeout(() => {
+        overlay.style.opacity = '1';
+        drawer.style.transform = 'translateX(0)';
+      }, 10);
+      TisoreUI.lockScroll(true);
+    },
+
+    closeDrawer() {
+      const drawer = document.getElementById('cart-drawer');
+      const overlay = document.getElementById('cart-drawer-overlay');
+      overlay.style.opacity = '0';
+      drawer.style.transform = 'translateX(100%)';
+      setTimeout(() => {
+        overlay.style.display = 'none';
+      }, 300);
+      TisoreUI.lockScroll(false);
+    },
+
+    renderDrawer() {
+      const container = document.getElementById('cart-drawer-items');
+      const subtotalEl = document.getElementById('cart-subtotal');
+      const feeEl = document.getElementById('cart-service-fee');
+      const totalEl = document.getElementById('cart-total');
+      const checkoutBtn = document.getElementById('btn-proceed-checkout');
+
+      subtotalEl.textContent = TisoreUtil.formatCurrency(this.getSubtotal());
+      feeEl.textContent = TisoreUtil.formatCurrency(this.getServiceFee());
+      totalEl.textContent = TisoreUtil.formatCurrency(this.getTotal());
+
+      if (this.items.length === 0) {
+        container.innerHTML = `
+          <div style="text-align:center;padding:60px 20px;color:#A8A8A0;">
+            <div style="font-size:48px;margin-bottom:16px;opacity:0.6;">🍽️</div>
+            <p style="font-family:'Cormorant Garamond',serif;font-size:20px;color:#F5F0E8;margin-bottom:8px;">Giỏ hàng trống</p>
+            <p style="font-size:12px;line-height:1.6;">Khám phá các kiệt tác ẩm thực và thêm món để bắt đầu đặt hàng.</p>
+          </div>
+        `;
+        checkoutBtn.disabled = true;
+        checkoutBtn.style.opacity = '0.5';
+        checkoutBtn.style.cursor = 'not-allowed';
+        return;
+      }
+
+      checkoutBtn.disabled = false;
+      checkoutBtn.style.opacity = '1';
+      checkoutBtn.style.cursor = 'pointer';
+
+      container.innerHTML = this.items.map(item => `
+        <div style="display:flex;gap:14px;align-items:center;padding-bottom:16px;border-bottom:1px solid #1E1E1E;">
+          <img src="${item.image}" alt="${item.name}" style="width:64px;height:64px;border-radius:2px;object-fit:cover;border:1px solid #2A2A2A;flex-shrink:0;" />
+          <div style="flex:1;min-width:0;">
+            <h4 style="font-family:'Cormorant Garamond',serif;font-size:15px;color:#F5F0E8;font-weight:500;margin:0 0 4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+              ${item.name}
+            </h4>
+            <p style="font-size:12px;color:#D4AF37;margin:0 0 8px;">${TisoreUtil.formatCurrency(item.price)}</p>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <button onclick="TisoreCart.updateQuantity('${item.id}', -1)" style="width:24px;height:24px;background:#181818;border:1px solid #2A2A2A;color:#D4AF37;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;border-radius:2px;">−</button>
+              <span style="font-size:12px;color:#F5F0E8;min-width:18px;text-align:center;">${item.quantity}</span>
+              <button onclick="TisoreCart.updateQuantity('${item.id}', 1)" style="width:24px;height:24px;background:#181818;border:1px solid #2A2A2A;color:#D4AF37;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;border-radius:2px;">+</button>
+            </div>
+          </div>
+          <div style="text-align:right;flex-shrink:0;">
+            <p style="font-family:'Cormorant Garamond',serif;font-size:15px;color:#F5F0E8;font-weight:600;margin:0 0 8px;">
+              ${TisoreUtil.formatCurrency(item.price * item.quantity)}
+            </p>
+            <button onclick="TisoreCart.removeItem('${item.id}')" title="Xóa món"
+              style="background:transparent;border:none;color:#777;cursor:pointer;font-size:13px;padding:2px;"
+              onmouseover="this.style.color='#EF4444'" onmouseout="this.style.color='#777'">
+              🗑️
+            </button>
+          </div>
+        </div>
+      `).join('');
+    },
+
+    bindEvents() {
+      // Cart open / close buttons
+      document.getElementById('header-cart-btn').addEventListener('click', () => this.openDrawer());
+      document.getElementById('btn-close-drawer').addEventListener('click', () => this.closeDrawer());
+      document.getElementById('cart-drawer-overlay').addEventListener('click', () => this.closeDrawer());
+
+      // Add to cart buttons throughout the page
+      document.querySelectorAll('.btn-add-to-cart').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const card = btn.closest('[data-id]') || btn;
+          const id = card.dataset.id;
+          const name = card.dataset.name;
+          const price = card.dataset.price;
+          const image = card.dataset.image;
+
+          if (id && name && price) {
+            this.addItem({ id, name, price, image });
+          }
+        });
+      });
+
+      // Proceed to checkout button
+      document.getElementById('btn-proceed-checkout').addEventListener('click', () => {
+        if (this.items.length === 0) return;
+        TisoreCheckout.openModal();
+      });
+    }
+  };
+
+
+  /* -------------------------------------------------------------
+     5. CHECKOUT FLOW (Feature 1: 1.4 - 1.7)
+  ------------------------------------------------------------- */
+  const TisoreCheckout = {
+    selectedPayment: 'cod',
+
+    init() {
+      this.bindEvents();
+    },
+
+    bindEvents() {
+      const backdrop = document.getElementById('checkout-modal-backdrop');
+      const closeBtn = document.getElementById('btn-close-checkout');
+
+      closeBtn.addEventListener('click', () => this.closeModal());
+      backdrop.addEventListener('click', (e) => {
+        if (e.target === backdrop) this.closeModal();
+      });
+
+      // Auto-format phone input while typing (Feature 1.5)
+      const phoneInput = document.getElementById('co-phone');
+      phoneInput.addEventListener('input', (e) => {
+        e.target.value = TisoreUtil.formatPhone(e.target.value);
+      });
+    },
+
+    openModal() {
+      const backdrop = document.getElementById('checkout-modal-backdrop');
+      const formScreen = document.getElementById('checkout-form-screen');
+      const successScreen = document.getElementById('checkout-success-screen');
+
+      formScreen.style.display = 'block';
+      successScreen.style.display = 'none';
+
+      // Update Order Summary in Modal
+      document.getElementById('co-summary-count').textContent = TisoreCart.getCount();
+      document.getElementById('co-summary-subtotal').textContent = TisoreUtil.formatCurrency(TisoreCart.getSubtotal());
+      document.getElementById('co-summary-fee').textContent = TisoreUtil.formatCurrency(TisoreCart.getServiceFee());
+      document.getElementById('co-summary-total').textContent = TisoreUtil.formatCurrency(TisoreCart.getTotal());
+
+      // Pre-fill from logged-in user (Feature 1.4)
+      const user = TisoreAuth.getUserData();
+      if (user) {
+        if (user.fullName && !document.getElementById('co-name').value) {
+          document.getElementById('co-name').value = user.fullName;
+        }
+        if (user.phone && !document.getElementById('co-phone').value) {
+          document.getElementById('co-phone').value = TisoreUtil.formatPhone(user.phone);
+        }
+        if (user.email && !document.getElementById('co-email').value) {
+          document.getElementById('co-email').value = user.email;
+        }
+        if (user.address && !document.getElementById('co-address').value) {
+          document.getElementById('co-address').value = user.address;
+        }
+      }
+
+      backdrop.classList.add('open');
+      TisoreUI.lockScroll(true);
+    },
+
+    closeModal() {
+      const backdrop = document.getElementById('checkout-modal-backdrop');
+      backdrop.classList.remove('open');
+      TisoreUI.lockScroll(false);
+    },
+
+    selectPayment(method) {
+      this.selectedPayment = method;
+      document.querySelectorAll('.payment-card').forEach(card => {
+        if (card.dataset.payment === method) {
+          card.classList.add('selected');
+        } else {
+          card.classList.remove('selected');
+        }
+      });
+    },
+
+    // Feature 1.7: Submit Success Flow
+    submitOrder() {
+      const nameInput = document.getElementById('co-name');
+      const phoneInput = document.getElementById('co-phone');
+      const emailInput = document.getElementById('co-email');
+      const addressInput = document.getElementById('co-address');
+      const deliveryTimeInput = document.getElementById('co-delivery-time');
+      const noteInput = document.getElementById('co-note');
+      const submitBtn = document.getElementById('btn-submit-order');
+
+      const name = nameInput.value.trim();
+      const rawPhone = TisoreUtil.getRawDigits(phoneInput.value);
+      const email = emailInput.value.trim();
+      const address = addressInput.value.trim();
+      const deliveryTime = deliveryTimeInput.value;
+      const note = noteInput.value.trim();
+
+      // Clear previous errors
+      ['co-name-err', 'co-phone-err', 'co-email-err', 'co-address-err'].forEach(id => {
+        document.getElementById(id).style.display = 'none';
+      });
+
+      // Step 1: Validate all
+      let valid = true;
+      if (name.length < 2) {
+        document.getElementById('co-name-err').style.display = 'block';
+        valid = false;
+      }
+      if (!TisoreUtil.isValidPhone(rawPhone)) {
+        document.getElementById('co-phone-err').style.display = 'block';
+        valid = false;
+      }
+      if (email && !TisoreUtil.isValidEmail(email)) {
+        document.getElementById('co-email-err').style.display = 'block';
+        valid = false;
+      }
+      if (address.length < 5) {
+        document.getElementById('co-address-err').style.display = 'block';
+        valid = false;
+      }
+
+      if (!valid) return;
+
+      // Step 2: Disable submit button, show spinner + "Đang xử lý..."
+      submitBtn.disabled = true;
+      submitBtn.style.opacity = '0.75';
+      submitBtn.style.cursor = 'wait';
+      submitBtn.innerHTML = `
+        <span class="tisore-spinner"></span>
+        <span>Đang xử lý...</span>
+      `;
+
+      // Step 3: Simulate 1.2s delay
+      setTimeout(() => {
+        // Step 4: Generate order ID
+        const orderId = '#TISORE-' + Date.now();
+
+        // Feature 1.4: Bind to JS object orderData
+        const orderData = {
+          id: orderId,
+          fullName: name,
+          phone: rawPhone,
+          email: email,
+          address: address,
+          deliveryTime: deliveryTime,
+          payment: this.selectedPayment,
+          note: note,
+          items: [...TisoreCart.items],
+          total: TisoreCart.getTotal(),
+          createdAt: new Date().toISOString()
+        };
+
+        // Save to localStorage under tisore_orders
+        try {
+          const orders = JSON.parse(localStorage.getItem('tisore_orders')) || [];
+          orders.push(orderData);
+          localStorage.setItem('tisore_orders', JSON.stringify(orders));
+        } catch (e) {
+          console.error('Error saving order', e);
+        }
+
+        // Also save address to tisore_user for future pre-fills if logged in
+        const user = TisoreAuth.getUserData();
+        if (user) {
+          user.address = address;
+          localStorage.setItem('tisore_user', JSON.stringify(user));
+        }
+
+        // Step 5: Show success screen with order details
+        document.getElementById('order-success-id').textContent = 'Mã đơn hàng: ' + orderId;
+        document.getElementById('order-success-name').textContent = name;
+        document.getElementById('order-success-phone').textContent = TisoreUtil.formatPhone(rawPhone);
+        document.getElementById('order-success-address').textContent = address;
+        
+        let paymentLabel = '💵 COD (Tiền mặt)';
+        if (this.selectedPayment === 'transfer') paymentLabel = '🏦 Chuyển khoản QR 24/7';
+        if (this.selectedPayment === 'card') paymentLabel = '💳 Thẻ tín dụng';
+        document.getElementById('order-success-payment').textContent = paymentLabel;
+        document.getElementById('order-success-total').textContent = TisoreUtil.formatCurrency(orderData.total);
+
+        document.getElementById('checkout-form-screen').style.display = 'none';
+        document.getElementById('checkout-success-screen').style.display = 'block';
+
+        // Step 6: Clear cart & form
+        TisoreCart.clear();
+        formScreenReset();
+
+        // Step 7: Reset button state
+        submitBtn.disabled = false;
+        submitBtn.style.opacity = '1';
+        submitBtn.style.cursor = 'pointer';
+        submitBtn.innerHTML = `<span>XÁC NHẬN ĐẶT HÀNG</span>`;
+
+        TisoreUI.showToast(`Đặt hàng thành công! Mã đơn ${orderId}`, '🎉');
+      }, 1200);
+
+      function formScreenReset() {
+        document.getElementById('co-name').value = '';
+        document.getElementById('co-phone').value = '';
+        document.getElementById('co-email').value = '';
+        document.getElementById('co-address').value = '';
+        document.getElementById('co-note').value = '';
+        document.getElementById('co-delivery-time').selectedIndex = 0;
+      }
+    },
+
+    finish() {
+      this.closeModal();
+      TisoreCart.closeDrawer();
+    }
+  };
+
+
+  /* -------------------------------------------------------------
+     6. RESERVATION SYSTEM (Feature 2: Full Booking Flow)
+  ------------------------------------------------------------- */
+  const TisoreReservation = {
+    selectedTime: '11:30',
+    selectedArea: 'Sảnh chính',
+    guestsCount: 2,
+    latestBooking: null,
+
+    init() {
+      this.bindEvents();
+      this.initDatePicker();
+    },
+
+    initDatePicker() {
+      const todayStr = new Date().toISOString().split('T')[0];
+      const dateInput = document.getElementById('modal-res-date');
+      if (dateInput) {
+        dateInput.min = todayStr;
+        dateInput.value = todayStr;
+        this.onDateChange();
+      }
+
+      // Also set min for page inline form if exists
+      const inlineDate = document.getElementById('res-date');
+      if (inlineDate) {
+        inlineDate.min = todayStr;
+        inlineDate.value = todayStr;
+      }
+    },
+
+    bindEvents() {
+      const backdrop = document.getElementById('reservation-modal-backdrop');
+      const closeBtn = document.getElementById('btn-close-reservation-modal');
+
+      closeBtn.addEventListener('click', () => this.closeModal());
+      backdrop.addEventListener('click', (e) => {
+        if (e.target === backdrop) this.closeModal();
+      });
+
+      // Feature 2.5: Event delegation with shared class .open-reservation-modal
+      document.addEventListener('click', (e) => {
+        const trigger = e.target.closest('.open-reservation-modal');
+        if (trigger) {
+          e.preventDefault();
+          this.openModal();
+        }
+      });
+
+      // Phone auto-format on modal reservation form
+      const phoneInput = document.getElementById('modal-res-phone');
+      if (phoneInput) {
+        phoneInput.addEventListener('input', (e) => {
+          e.target.value = TisoreUtil.formatPhone(e.target.value);
+        });
+      }
+
+      // Sync inline section reservation form submit
+      const inlineForm = document.getElementById('reservation-form');
+      if (inlineForm) {
+        inlineForm.addEventListener('submit', (e) => {
+          e.preventDefault();
+          this.handleInlineSubmit();
+        });
+      }
+    },
+
+    openModal() {
+      const backdrop = document.getElementById('reservation-modal-backdrop');
+      document.getElementById('res-modal-form-screen').style.display = 'block';
+      document.getElementById('res-modal-success-screen').style.display = 'none';
+
+      // Feature 2.6: Pre-fill logic from tisore_user
+      const user = TisoreAuth.getUserData();
+      if (user) {
+        if (user.fullName && !document.getElementById('modal-res-name').value) {
+          document.getElementById('modal-res-name').value = user.fullName;
+        }
+        if (user.phone && !document.getElementById('modal-res-phone').value) {
+          document.getElementById('modal-res-phone').value = TisoreUtil.formatPhone(user.phone);
+        }
+        if (user.email && !document.getElementById('modal-res-email').value) {
+          document.getElementById('modal-res-email').value = user.email;
+        }
+      }
+
+      backdrop.classList.add('open');
+      TisoreUI.lockScroll(true);
+    },
+
+    closeModal() {
+      const backdrop = document.getElementById('reservation-modal-backdrop');
+      backdrop.classList.remove('open');
+      TisoreUI.lockScroll(false);
+    },
+
+    selectTime(timeStr) {
+      this.selectedTime = timeStr;
+      document.querySelectorAll('#res-time-chips .tisore-chip').forEach(chip => {
+        if (chip.dataset.time === timeStr) {
+          chip.classList.add('active');
+        } else {
+          chip.classList.remove('active');
+        }
+      });
+      this.checkTimeWarning();
+    },
+
+    selectArea(areaStr) {
+      this.selectedArea = areaStr;
+      document.querySelectorAll('#res-area-chips .tisore-chip').forEach(chip => {
+        if (chip.dataset.area === areaStr) {
+          chip.classList.add('active');
+        } else {
+          chip.classList.remove('active');
+        }
+      });
+    },
+
+    changeGuests(delta) {
+      let next = this.guestsCount + delta;
+      if (next < 1) next = 1;
+      if (next > 20) next = 20;
+      this.guestsCount = next;
+      document.getElementById('modal-res-guests-val').textContent = next;
+
+      // Feature 2.3: Party size > 8 notice
+      const notice = document.getElementById('res-large-party-notice');
+      if (this.guestsCount > 8) {
+        notice.style.display = 'block';
+      } else {
+        notice.style.display = 'none';
+      }
+    },
+
+    onDateChange() {
+      const dateInput = document.getElementById('modal-res-date');
+      const pickedDate = dateInput.value;
+      const todayStr = new Date().toISOString().split('T')[0];
+
+      // Cannot book past date
+      if (pickedDate < todayStr) {
+        dateInput.value = todayStr;
+        TisoreUI.showToast('Không thể chọn ngày trong quá khứ', '⚠️');
+      }
+
+      this.checkTimeWarning();
+    },
+
+    checkTimeWarning() {
+      const dateInput = document.getElementById('modal-res-date');
+      const warningEl = document.getElementById('res-time-warning');
+      const todayStr = new Date().toISOString().split('T')[0];
+      const isToday = dateInput.value === todayStr;
+
+      if (!isToday) {
+        warningEl.style.display = 'none';
+        return;
+      }
+
+      // Feature 2.3: Cannot book < 2 hours from now if booking for today
+      const now = new Date();
+      const [hours, minutes] = this.selectedTime.split(':').map(Number);
+      const slotTime = new Date();
+      slotTime.setHours(hours, minutes, 0, 0);
+
+      const diffHours = (slotTime - now) / (1000 * 60 * 60);
+      if (diffHours < 2) {
+        warningEl.style.display = 'inline';
+      } else {
+        warningEl.style.display = 'none';
+      }
+    },
+
+    submitBooking() {
+      const name = document.getElementById('modal-res-name').value.trim();
+      const rawPhone = TisoreUtil.getRawDigits(document.getElementById('modal-res-phone').value);
+      const email = document.getElementById('modal-res-email').value.trim();
+      const date = document.getElementById('modal-res-date').value;
+      const occasion = document.getElementById('modal-res-occasion').value;
+      const note = document.getElementById('modal-res-note').value.trim();
+
+      // Clear errors
+      ['modal-res-name-err', 'modal-res-phone-err', 'modal-res-email-err', 'modal-res-date-err', 'modal-res-time-err'].forEach(id => {
+        document.getElementById(id).style.display = 'none';
+      });
+
+      let valid = true;
+      if (name.length < 2) {
+        document.getElementById('modal-res-name-err').style.display = 'block';
+        valid = false;
+      }
+      if (!TisoreUtil.isValidPhone(rawPhone)) {
+        document.getElementById('modal-res-phone-err').style.display = 'block';
+        valid = false;
+      }
+      if (email && !TisoreUtil.isValidEmail(email)) {
+        document.getElementById('modal-res-email-err').style.display = 'block';
+        valid = false;
+      }
+      if (!date) {
+        document.getElementById('modal-res-date-err').style.display = 'block';
+        valid = false;
+      }
+
+      // Check 2h advance requirement if booking for today
+      const todayStr = new Date().toISOString().split('T')[0];
+      if (date === todayStr) {
+        const now = new Date();
+        const [hours, minutes] = this.selectedTime.split(':').map(Number);
+        const slotTime = new Date();
+        slotTime.setHours(hours, minutes, 0, 0);
+        if ((slotTime - now) / (1000 * 60 * 60) < 2) {
+          document.getElementById('modal-res-time-err').textContent = 'Vui lòng đặt trước ít nhất 2 giờ so với thời điểm hiện tại.';
+          document.getElementById('modal-res-time-err').style.display = 'block';
+          valid = false;
+        }
+      }
+
+      if (!valid) return;
+
+      // Submit Success Flow
+      const bookingCode = '#TABLE-' + Date.now();
+      const bookingData = {
+        code: bookingCode,
+        fullName: name,
+        phone: rawPhone,
+        email: email,
+        date: date,
+        time: this.selectedTime,
+        guests: this.guestsCount,
+        area: this.selectedArea,
+        occasion: occasion,
+        note: note,
+        createdAt: new Date().toISOString()
+      };
+
+      this.latestBooking = bookingData;
+
+      // Save to localStorage under tisore_reservations
+      try {
+        const list = JSON.parse(localStorage.getItem('tisore_reservations')) || [];
+        list.push(bookingData);
+        localStorage.setItem('tisore_reservations', JSON.stringify(list));
+      } catch (e) {
+        console.error('Error saving reservation', e);
+      }
+
+      // Show success screen
+      document.getElementById('booking-success-code').textContent = 'Mã đặt bàn: ' + bookingCode;
+      document.getElementById('res-success-name').textContent = name;
+      document.getElementById('res-success-datetime').textContent = `${this.selectedTime} — Ngày ${date.split('-').reverse().join('/')}`;
+      document.getElementById('res-success-guests').textContent = `${this.guestsCount} khách`;
+      document.getElementById('res-success-area').textContent = this.selectedArea;
+      document.getElementById('res-success-occasion').textContent = occasion;
+
+      document.getElementById('res-modal-form-screen').style.display = 'none';
+      document.getElementById('res-modal-success-screen').style.display = 'block';
+
+      TisoreUI.showToast(`Đặt bàn thành công! Mã ${bookingCode}`, '🥂');
+    },
+
+    handleInlineSubmit() {
+      const name = document.getElementById('res-name').value.trim();
+      const rawPhone = TisoreUtil.getRawDigits(document.getElementById('res-phone').value);
+      const date = document.getElementById('res-date').value;
+      const time = document.getElementById('res-time').value;
+      const guests = document.getElementById('res-guests').value;
+      const area = document.getElementById('res-area').value;
+      const occasion = document.getElementById('res-occasion').value;
+      const note = document.getElementById('res-note').value.trim();
+
+      if (!name || !rawPhone || !date) {
+        TisoreUI.showToast('Vui lòng điền đủ Họ tên, SĐT và Ngày đặt bàn', '⚠️');
+        return;
+      }
+
+      const bookingCode = '#TABLE-' + Date.now();
+      const bookingData = {
+        code: bookingCode,
+        fullName: name,
+        phone: rawPhone,
+        email: '',
+        date: date,
+        time: time || '19:00',
+        guests: guests || '2 khách',
+        area: area || 'Sảnh Chính',
+        occasion: occasion || 'Không có',
+        note: note,
+        createdAt: new Date().toISOString()
+      };
+
+      this.latestBooking = bookingData;
+
+      try {
+        const list = JSON.parse(localStorage.getItem('tisore_reservations')) || [];
+        list.push(bookingData);
+        localStorage.setItem('tisore_reservations', JSON.stringify(list));
+      } catch (e) {}
+
+      // Open modal success screen
+      this.openModal();
+      document.getElementById('booking-success-code').textContent = 'Mã đặt bàn: ' + bookingCode;
+      document.getElementById('res-success-name').textContent = name;
+      document.getElementById('res-success-datetime').textContent = `${bookingData.time} — Ngày ${date.split('-').reverse().join('/')}`;
+      document.getElementById('res-success-guests').textContent = bookingData.guests;
+      document.getElementById('res-success-area').textContent = bookingData.area;
+      document.getElementById('res-success-occasion').textContent = bookingData.occasion;
+
+      document.getElementById('res-modal-form-screen').style.display = 'none';
+      document.getElementById('res-modal-success-screen').style.display = 'block';
+
+      TisoreUI.showToast(`Đặt bàn thành công! Mã ${bookingCode}`, '🥂');
+    },
+
+    // Feature 2.4: Download .ics calendar file
+    downloadIcs() {
+      const b = this.latestBooking;
+      if (!b) return;
+
+      const [y, m, d] = b.date.split('-');
+      const [hh, mm] = (b.time || '18:00').split(':');
+
+      const start = `${y}${m}${d}T${hh}${mm}00`;
+      const endHour = String(Number(hh) + 2).padStart(2, '0');
+      const end = `${y}${m}${d}T${endHour}${mm}00`;
+
+      const icsContent = [
+        'BEGIN:VCALENDAR',
+        'VERSION:2.0',
+        'PRODID:-//Maison Tisore//Fine Dining Gastronomy//VI',
+        'CALSCALE:GREGORIAN',
+        'METHOD:PUBLISH',
+        'BEGIN:VEVENT',
+        `UID:${b.code}@tisore.vn`,
+        `DTSTAMP:${new Date().toISOString().replace(/[-:]/g, '').split('.')[0]}Z`,
+        `DTSTART:${start}`,
+        `DTEND:${end}`,
+        `SUMMARY:Bữa Tối Tại Maison Tisore (${b.area})`,
+        `DESCRIPTION:Bảo lưu bàn ăn tại Maison Tisore cho ${b.guests}. Mã đặt bàn: ${b.code}. Hotline hỗ trợ: 1900 888 999.`,
+        'LOCATION:18 Tràng Tiền, Hoàn Kiếm, Hà Nội',
+        'STATUS:CONFIRMED',
+        'END:VEVENT',
+        'END:VCALENDAR'
+      ].join('\r\n');
+
+      const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Tisore-Reservation-${b.code}.ics`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      TisoreUI.showToast('Đã tải file lịch sự kiện (.ics) về thiết bị', '📅');
+    }
+  };
+
+
+  /* -------------------------------------------------------------
+     7. ACTIVITY / HISTORY VIEWER MODAL
+  ------------------------------------------------------------- */
+  const TisoreHistory = {
+    showOrders() {
+      const modal = document.getElementById('history-modal-backdrop');
+      const title = document.getElementById('history-modal-title');
+      const content = document.getElementById('history-modal-content');
+
+      title.textContent = 'Đơn Hàng Giao Tận Nơi Của Bạn';
+      let orders = [];
+      try {
+        orders = JSON.parse(localStorage.getItem('tisore_orders')) || [];
+      } catch (e) {}
+
+      if (orders.length === 0) {
+        content.innerHTML = `
+          <div style="text-align:center;padding:40px;color:#A8A8A0;">
+            <p style="font-size:14px;margin-bottom:6px;">Chưa có đơn hàng nào.</p>
+            <p style="font-size:12px;">Các đơn hàng của Quý khách sẽ được lưu giữ tại đây.</p>
+          </div>
+        `;
+      } else {
+        content.innerHTML = orders.slice().reverse().map(order => `
+          <div style="background:#181818;border:1px solid #2A2A2A;padding:18px;border-radius:2px;">
+            <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+              <span style="font-family:'Cormorant Garamond',serif;font-size:16px;color:#D4AF37;font-weight:600;">${order.id}</span>
+              <span style="font-size:11px;color:#A8A8A0;">${new Date(order.createdAt).toLocaleDateString('vi-VN')}</span>
+            </div>
+            <p style="font-size:12px;color:#F5F0E8;margin-bottom:6px;">Địa chỉ: ${order.address}</p>
+            <div style="font-size:12px;color:#A8A8A0;margin-bottom:8px;">
+              ${(order.items || []).map(i => `${i.name} (x${i.quantity})`).join(', ')}
+            </div>
+            <div style="display:flex;justify-content:space-between;border-top:1px solid #222;padding-top:8px;font-size:12px;">
+              <span style="color:#A8A8A0;">Phương thức: ${order.payment.toUpperCase()}</span>
+              <span style="font-family:'Cormorant Garamond',serif;font-size:16px;color:#D4AF37;font-weight:600;">${TisoreUtil.formatCurrency(order.total)}</span>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      modal.classList.add('open');
+      TisoreUI.lockScroll(true);
+    },
+
+    showReservations() {
+      const modal = document.getElementById('history-modal-backdrop');
+      const title = document.getElementById('history-modal-title');
+      const content = document.getElementById('history-modal-content');
+
+      title.textContent = 'Lịch Sử Bàn Đã Đặt';
+      let reservations = [];
+      try {
+        reservations = JSON.parse(localStorage.getItem('tisore_reservations')) || [];
+      } catch (e) {}
+
+      if (reservations.length === 0) {
+        content.innerHTML = `
+          <div style="text-align:center;padding:40px;color:#A8A8A0;">
+            <p style="font-size:14px;margin-bottom:6px;">Chưa có lịch đặt bàn nào.</p>
+            <p style="font-size:12px;">Đặt bàn ngay để lưu giữ những khoảnh khắc ẩm thực khó quên.</p>
+          </div>
+        `;
+      } else {
+        content.innerHTML = reservations.slice().reverse().map(res => `
+          <div style="background:#181818;border:1px solid #2A2A2A;padding:18px;border-radius:2px;">
+            <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+              <span style="font-family:'Cormorant Garamond',serif;font-size:16px;color:#D4AF37;font-weight:600;">${res.code}</span>
+              <span style="font-size:11px;color:#A8A8A0;">${res.time} — ${res.date}</span>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:12px;color:#F5F0E8;margin-bottom:8px;">
+              <div>Khu vực: <span style="color:#D4AF37;">${res.area}</span></div>
+              <div>Số khách: ${res.guests}</div>
+            </div>
+            ${res.note ? `<p style="font-size:11px;color:#A8A8A0;font-style:italic;">Ghi chú: ${res.note}</p>` : ''}
+          </div>
+        `).join('');
+      }
+
+      modal.classList.add('open');
+      TisoreUI.lockScroll(true);
+    },
+
+    bindEvents() {
+      const backdrop = document.getElementById('history-modal-backdrop');
+      const closeBtn = document.getElementById('btn-close-history-modal');
+      closeBtn.addEventListener('click', () => {
+        backdrop.classList.remove('open');
+        TisoreUI.lockScroll(false);
+      });
+      backdrop.addEventListener('click', (e) => {
+        if (e.target === backdrop) {
+          backdrop.classList.remove('open');
+          TisoreUI.lockScroll(false);
+        }
+      });
+    }
+  };
+
+
+  /* -------------------------------------------------------------
+     8. GLOBAL SHORTCUTS & INITIALIZATION
+  ------------------------------------------------------------- */
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      const openModals = document.querySelectorAll('.modal-backdrop.open');
+      if (openModals.length > 0) {
+        openModals.forEach(m => m.classList.remove('open'));
+        TisoreUI.lockScroll(false);
+      } else {
+        TisoreCart.closeDrawer();
+      }
+      document.getElementById('user-menu-dropdown').classList.remove('show');
+    }
+  });
+
+  // Master Initialize on DOM Loaded
+  document.addEventListener('DOMContentLoaded', () => {
+    TisoreAuth.init();
+    TisoreCart.init();
+    TisoreCheckout.init();
+    TisoreReservation.init();
+    TisoreHistory.bindEvents();
+  });
+  </script>
+</body>
+</html>
